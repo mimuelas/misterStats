@@ -82,25 +82,3 @@ class MisterAPI:
         post_data = {'post': 'players', 'id': player_id}
         return self._request("POST", "/ajax/sw/players", post_data=post_data)
 
-
-if __name__ == "__main__":
-    """
-    Este bloque se ejecuta solo cuando el script es llamado directamente.
-    Su propósito es obtener los datos de un jugador de ejemplo y guardarlos
-    en un fichero JSON para que el dashboard pueda leerlos.
-    """
-    api = MisterAPI()
-
-    print("Actualizando datos del jugador (ID 27425 - Galarreta)...")
-    player_json = api.get_player_details(player_id="27425")
-    
-    if player_json and player_json.get('status') == 'ok':
-        output_filename = "player_details_27425.json"
-        try:
-            with open(output_filename, "w", encoding="utf-8") as f:
-                json.dump(player_json, f, indent=2, ensure_ascii=False)
-            print(f"-> ¡Datos guardados correctamente en '{output_filename}'!")
-        except IOError as e:
-            print(f"-> Error al escribir el fichero JSON: {e}")
-    else:
-        print("-> No se pudieron obtener los datos del jugador o la respuesta no fue 'ok'.")

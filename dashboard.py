@@ -24,98 +24,207 @@ def format_currency(value):
     return "N/A"
 
 def parse_team_html(html_content):
-    """Parsea el HTML del equipo para extraer la información de los jugadores."""
+    """
+    Parsea el HTML del equipo para extraer la información de los jugadores y los datos del resumen del footer.
+    """
     soup = BeautifulSoup(html_content, 'html.parser')
+    
+    # --- Extraer jugadores ---
     players = []
-    
     player_list = soup.find('ul', class_='list-team')
-    if not player_list:
-        return []
+    if player_list:
+        for player_item in player_list.find_all('li'):
+            player_id = player_item.get('id', '').replace('player-', '')
+            if not player_id:
+                continue
 
-    for player_item in player_list.find_all('li'):
-        player_id = player_item.get('id', '').replace('player-', '')
-        if not player_id:
-            continue
+            name_div = player_item.find('div', class_='name')
+            name = name_div.text.strip() if name_div else 'N/A'
+            
+            img_tag = player_item.find('div', class_='player-avatar').find('img')
+            photo_url = img_tag['src'] if img_tag else ''
 
-        name_div = player_item.find('div', class_='name')
-        name = name_div.text.strip() if name_div else 'N/A'
-        
-        img_tag = player_item.find('div', class_='player-avatar').find('img')
-        photo_url = img_tag['src'] if img_tag else ''
+            position_div = player_item.find('div', class_='player-position')
+            position_map = {'1': 'PT', '2': 'DF', '3': 'MC', '4': 'DL'}
+            position = position_map.get(position_div['data-position'], 'N/A') if position_div else 'N/A'
+            
+            value_span = player_item.find('div', class_='underName')
+            market_value = 0
+            if value_span:
+                numeric_match = re.search(r'[\d\.]+', value_span.text)
+                if numeric_match:
+                    value_text = numeric_match.group(0).replace('.', '')
+                    if value_text.isdigit():
+                        market_value = int(value_text)
 
-        position_div = player_item.find('div', class_='player-position')
-        position_map = {'1': 'PT', '2': 'DF', '3': 'MC', '4': 'DL'}
-        position = position_map.get(position_div['data-position'], 'N/A') if position_div else 'N/A'
-        
-        value_span = player_item.find('div', class_='underName')
-        market_value = 0
-        if value_span:
-            # Use regex to find the first sequence of digits and dots (the value)
-            numeric_match = re.search(r'[\d\.]+', value_span.text)
-            if numeric_match:
-                # Remove dots used as thousands separators and convert to int
-                value_text = numeric_match.group(0).replace('.', '')
-                if value_text.isdigit():
-                    market_value = int(value_text)
+            points_div = player_item.find('div', class_='points')
+            points = points_div.text.strip() if points_div else 'N/A'
 
-        points_div = player_item.find('div', class_='points')
-        points = points_div.text.strip() if points_div else 'N/A'
+            avg_div = player_item.find('div', class_='avg')
+            avg_points = avg_div.text.strip() if avg_div else 'N/A'
+            
+            team_logo_img = player_item.find('img', class_='team-logo')
+            team_logo = team_logo_img['src'] if team_logo_img else ''
 
-        avg_div = player_item.find('div', class_='avg')
-        avg_points = avg_div.text.strip() if avg_div else 'N/A'
-        
-        team_logo_img = player_item.find('img', class_='team-logo')
-        team_logo = team_logo_img['src'] if team_logo_img else ''
+            players.append({
+                'id': player_id,
+                'name': name,
+                'photoUrl': photo_url,
+                'position': position,
+                'value': market_value,
+                'points': points,
+                'avg_points': avg_points,
+                'team_logo': team_logo
+            })
 
-        players.append({
-            'id': player_id,
-            'name': name,
-            'photoUrl': photo_url,
-            'position': position,
-            'value': market_value,
-            'points': points,
-            'avg_points': avg_points,
-            'team_logo': team_logo
-        })
-    return players
+    # --- Extraer resumen del footer ---
+    summary_data = {
+        'player_count': 'N/A',
+        'team_value': 'N/A',
+        'balance': 'N/A'
+    }
+    footer_info = soup.find('div', class_='live-balance')
+    if footer_info:
+        items = footer_info.find_all('div', class_='item')
+        if len(items) == 3:
+            summary_data['player_count'] = items[0].find('div', class_='value').text.strip()
+            summary_data['team_value'] = items[1].find('div', class_='value').text.strip()
+            summary_data['balance'] = items[2].find('div', class_='value').text.strip()
+
+    return {'players': players, 'summary': summary_data}
 
 
-def show_team_view(players):
-    """Muestra la vista de la plantilla completa."""
-    st.title("Mi Plantilla - Mister Fantasy ⚽")
+def show_rebuilt_team_view(players, summary, team_html_content):
+    """
+    Muestra una vista del equipo reconstruida 100% con componentes de Streamlit
+    y CSS personalizado para imitar el diseño original de forma robusta.
+    """
+    soup = BeautifulSoup(team_html_content, 'html.parser')
 
-    positions = {'PT': 'Porteros', 'DF': 'Defensas', 'MC': 'Centrocampistas', 'DL': 'Delanteros'}
+    # --- 1. Mostrar métricas del equipo ---
+    variations = get_daily_variations(players)
+    total_variation = sum(variations.values())
+
+    col1, col2, col3, col4 = st.columns(4)
+    col1.metric("Saldo Actual", summary['balance'])
+    col2.metric("Valor del Equipo", summary['team_value'])
+    col3.metric("Jugadores", summary['player_count'])
+    col4.metric("Variación Hoy", format_currency(total_variation),
+                delta=f"{total_variation:,.0f}".replace(",", "."),
+                delta_color=("inverse" if total_variation < 0 else "normal"))
+    st.divider()
+
+    # --- 2. Recrear el campo de fútbol y la alineación ---
+    st.subheader("Alineación Titular")
+
+    # Extraer IDs de jugadores titulares
+    lineup_players_ids = [btn.get('data-id_player') for btn in soup.select('.lineup-starting .lineup-player')]
+
+    # Extraer la formación (líneas)
+    lines = {}
+    for i in range(4, 0, -1):
+        line_div = soup.find('div', class_=f'line-{i}')
+        if line_div:
+            player_ids_in_line = [btn.get('data-id_player') for btn in line_div.find_all('button')]
+            # Mapear IDs a los datos completos del jugador que ya tenemos
+            lines[i] = [p for p in players if p['id'] in player_ids_in_line]
     
-    for pos_code, pos_name in positions.items():
-        st.subheader(pos_name)
-        
-        position_players = [p for p in players if p['position'] == pos_code]
-        
-        if not position_players:
-            st.info(f"No tienes {pos_name.lower()}.")
-            continue
+    # Renderizar campo y jugadores con CSS personalizado
+    st.markdown("""
+    <style>
+        .field {
+            background: linear-gradient(to bottom, #006400, #004d00);
+            border-radius: 10px;
+            padding: 20px 10px;
+            border: 2px solid #C8E6C9;
+            position: relative;
+        }
+        .field::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            border-top: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        .field-circle {
+            width: 120px;
+            height: 120px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .player-card {
+            text-align: center;
+            color: white;
+            margin-bottom: 10px;
+        }
+        .player-card img {
+            border-radius: 50%;
+            border: 2px solid white;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .player-card .name {
+            font-size: 0.8rem;
+            font-weight: bold;
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 2px 6px;
+            border-radius: 5px;
+            display: inline-block;
+            margin-top: 4px;
+        }
+    </style>
+    """, unsafe_allow_html=True)
 
-        cols = st.columns(4) 
-        
-        for i, player in enumerate(position_players):
-            with cols[i % 4]:
-                st.image(player['photoUrl'], width=100)
-                st.markdown(f"**{player['name']}**")
-                
-                # Info de equipo y puntos
-                col1, col2 = st.columns([1, 4])
-                with col1:
-                    st.image(player['team_logo'], width=24)
-                with col2:
-                    st.markdown(f"**Pts:** {player['points']} | **Media:** {player['avg_points']}")
+    with st.container():
+        st.markdown('<div class="field"><div class="field-circle"></div>', unsafe_allow_html=True)
+        # Iterar en orden inverso para que los delanteros aparezcan arriba
+        for i in sorted(lines.keys(), reverse=True):
+            players_in_line = lines[i]
+            if not players_in_line: continue
+            
+            cols = st.columns(len(players_in_line))
+            for idx, player in enumerate(players_in_line):
+                with cols[idx]:
+                    st.markdown(f"""
+                    <div class="player-card">
+                        <img src="{player['photoUrl']}" width="70">
+                        <div class="name">{player['name']}</div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    if st.button("Ver", key=f"btn_lineup_{player['id']}"):
+                        st.query_params['player_id'] = player['id']
+                        st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
+    
+    st.divider()
 
-                st.caption(f"Valor: {format_currency(player['value'])}")
-
-                if st.button("Ver detalles", key=f"btn_{player['id']}"):
-                    st.query_params['player_id'] = player['id']
-                    st.rerun()
-        
-        st.divider()
+    # --- 3. Mostrar la lista completa de la plantilla ---
+    st.subheader("Plantilla Completa")
+    
+    for i in range(0, len(players), 4):
+        cols = st.columns(4)
+        for j in range(4):
+            if i + j < len(players):
+                player = players[i+j]
+                with cols[j]:
+                    st.image(player['photoUrl'], width=80)
+                    st.markdown(f"**{player['name']}**")
+                    variation = variations.get(player['id'], 0)
+                    delta_text = f"{format_currency(variation)}"
+                    
+                    st.metric(
+                        label=f"{format_currency(player['value'])}",
+                        value=f"Pts: {player['points']} | Media: {player['avg_points']}",
+                        delta=delta_text,
+                        delta_color=("inverse" if variation < 0 else "normal")
+                    )
+                    if st.button("Ver Detalles", key=f"btn_squad_{player['id']}"):
+                        st.query_params['player_id'] = player['id']
+                        st.rerun()
 
 
 def show_player_details_view(player_id):
@@ -126,8 +235,9 @@ def show_player_details_view(player_id):
         st.query_params.clear()
         st.rerun()
 
-    # Cargar datos del jugador desde la API
-    json_data = api.get_player_details(player_id)
+    with st.spinner(f"Cargando detalles del jugador ID: {player_id}..."):
+        # Cargar datos del jugador desde la API
+        json_data = api.get_player_details(player_id)
 
     if not json_data or json_data.get('status') != 'ok':
         st.error("No se pudieron obtener los datos del jugador.")
@@ -249,90 +359,19 @@ def get_daily_variations(players):
 if "player_id" in st.query_params:
     show_player_details_view(st.query_params["player_id"])
 else:
+    st.title("Mi Equipo - Mister Fantasy ⚽")
     team_html_content = api.get_team()
     
     if not team_html_content:
         st.error("No se pudo obtener la información del equipo.")
         st.stop()
         
-    players = parse_team_html(team_html_content)
+    parsed_data = parse_team_html(team_html_content)
+    players = parsed_data['players']
+    summary = parsed_data['summary']
     
     if not players:
         st.error("No se pudieron encontrar jugadores en la página del equipo.")
         st.stop()
 
-    variations = get_daily_variations(players)
-    total_variation = sum(variations.values())
-
-    soup = BeautifulSoup(team_html_content, 'html.parser')
-
-    # Inyectar la variación total
-    total_variation_html = f"""
-    <div class="custom-variation-total">
-        <h3>Variación total del equipo (último día)</h3>
-        <p class="{ 'positive' if total_variation >= 0 else 'negative' }">
-            {format_currency(total_variation)}
-        </p>
-    </div>
-    """
-    header = soup.find('header')
-    if header:
-        header.insert_after(BeautifulSoup(total_variation_html, 'html.parser'))
-
-    # Inyectar variaciones individuales y modificar enlaces
-    for player in players:
-        player_id = player['id']
-        player_li = soup.find('li', id=f'player-{player_id}')
-        if player_li:
-            variation = variations.get(player_id, 0)
-            
-            # Crear el HTML para la variación
-            variation_html = f"""
-            <div class="player-variation { 'positive' if variation >= 0 else 'negative' }">
-                {format_currency(variation)}
-            </div>
-            """
-            
-            # Inyectar la variación
-            under_name_div = player_li.find('div', class_='underName')
-            if under_name_div:
-                under_name_div.insert_after(BeautifulSoup(variation_html, 'html.parser'))
-
-            # Modificar el enlace del jugador
-            player_link = player_li.find('a', class_='player')
-            if player_link:
-                player_link['href'] = f'/?player_id={player_id}'
-                if 'data-event' in player_link.attrs:
-                    del player_link['data-event'] # Evitar conflictos JS
-
-    # Inyectar CSS personalizado
-    custom_css = """
-    <style>
-        .custom-variation-total {
-            text-align: center;
-            padding: 20px;
-            background-color: #1e1e2f;
-            border-radius: 8px;
-            margin: 20px;
-        }
-        .custom-variation-total h3 {
-            margin: 0;
-            color: #fff;
-        }
-        .custom-variation-total p {
-            font-size: 2em;
-            margin: 10px 0 0 0;
-            font-weight: bold;
-        }
-        .player-variation {
-            font-weight: bold;
-            text-align: right;
-        }
-        .positive { color: #28a745; }
-        .negative { color: #dc3545; }
-    </style>
-    """
-    soup.head.append(BeautifulSoup(custom_css, 'html.parser'))
-
-    # Mostrar el HTML modificado
-    st.components.v1.html(str(soup), height=1200, scrolling=True)
+    show_rebuilt_team_view(players, summary, team_html_content)

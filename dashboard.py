@@ -14,20 +14,170 @@ st.set_page_config(
 )
 
 # --- Instancia de la API ---
-api = MisterAPI()
+@st.cache_resource
+def get_api_connector():
+    return MisterAPI()
+
+api = get_api_connector()
+
+# --- Cache para datos de jugadores ---
+@st.cache_data(ttl=3600)
+def get_player_details_cached(player_id):
+    return api.get_player_details(player_id)
+
+@st.cache_data(ttl=3600)
+def get_team_html_cached():
+    return api.get_team()
+
+# --- Estilos CSS ---
+def load_css():
+    st.markdown("""
+    <style>
+        /* --- General Theme --- */
+        body {
+            color: #FAFAFA;
+            background-color: #0d1117;
+        }
+        .stApp {
+            background-color: #0d1117;
+        }
+        h1, h2, h3 {
+            color: #FAFAFA !important;
+        }
+        h3 {
+            border-bottom: 2px solid #28a745;
+            padding-bottom: 5px;
+            margin-bottom: 20px;
+        }
+        hr {
+            background-color: #30363d;
+        }
+
+        /* --- Custom Metric Cards --- */
+        div[data-testid="stMetric"] {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        div[data-testid="stMetric"] > label {
+            color: #8b949e;
+        }
+
+        /* --- Buttons --- */
+        div[data-testid="stButton"] > button {
+            border-radius: 8px;
+            width: 100%;
+            border: 1px solid #28a745;
+            background-color: transparent;
+            color: #28a745;
+            transition: all 0.2s ease-in-out;
+        }
+        div[data-testid="stButton"] > button:hover {
+            background-color: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+        div[data-testid="stButton"] > button:focus {
+            background-color: #28a745;
+            color: white;
+            border-color: #28a745;
+            box-shadow: 0 0 0 2px #0d1117, 0 0 0 4px #28a745;
+        }
+
+        /* --- Field & Alignment --- */
+        .field {
+            background: linear-gradient(to bottom, #006400, #004d00);
+            border-radius: 10px;
+            padding: 20px 10px;
+            border: 2px solid #C8E6C9;
+            position: relative;
+            overflow: hidden;
+        }
+        .field::before { /* Center line */
+            content: '';
+            position: absolute;
+            top: 0; bottom: 0; left: 50%;
+            border-left: 2px solid rgba(255, 255, 255, 0.2);
+            transform: translateX(-50%);
+        }
+        .field-circle { /* Center circle */
+            width: 15%;
+            padding-bottom: 15%;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .player-card-on-pitch {
+            text-align: center;
+            color: white;
+            margin-bottom: 10px;
+        }
+        .player-card-on-pitch img {
+            border-radius: 50%;
+            border: 2px solid white;
+            background-color: rgba(0, 0, 0, 0.3);
+        }
+        .player-card-on-pitch .name {
+            font-size: 0.8rem; font-weight: bold;
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 2px 6px; border-radius: 5px;
+            display: inline-block; margin-top: 4px;
+        }
+
+        /* --- Full Squad Player Cards --- */
+        .squad-card {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            margin-bottom: 10px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .squad-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(40, 167, 69, 0.2);
+            border-color: #28a745;
+        }
+        .squad-card .name {
+            font-weight: bold; font-size: 1.1em;
+            margin-top: 5px; white-space: nowrap;
+            overflow: hidden; text-overflow: ellipsis;
+        }
+        .squad-card .value { font-size: 0.9em; color: #8b949e; }
+        .squad-card .stats { font-size: 0.9em; color: #c9d1d9; margin-bottom: 10px; }
+        .squad-card .delta { font-weight: bold; font-size: 1em; margin-bottom: 10px; }
+        .squad-card .positive { color: #28a745; }
+        .squad-card .negative { color: #dc3545; }
+
+        /* --- Player Details View --- */
+        div[data-testid="stSidebar"] {
+            background-color: #161b22;
+            border-right: 1px solid #30363d;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+
 
 # --- Funciones de ayuda ---
 def format_currency(value):
-    """Formatea un número como moneda en euros, usando puntos para los miles."""
     if isinstance(value, (int, float)):
         return f"{value:,.0f} €".replace(",", ".")
     return "N/A"
 
-def parse_team_html(html_content):
+@st.cache_data(ttl=3600)
+def parse_team_html(_html_content):
     """
     Parsea el HTML del equipo para extraer la información de los jugadores y los datos del resumen del footer.
     """
-    soup = BeautifulSoup(html_content, 'html.parser')
+    soup = BeautifulSoup(_html_content, 'html.parser')
     
     # --- Extraer jugadores ---
     players = []
@@ -95,16 +245,14 @@ def parse_team_html(html_content):
 
 
 def show_rebuilt_team_view(players, summary, team_html_content):
-    """
-    Muestra una vista del equipo reconstruida 100% con componentes de Streamlit
-    y CSS personalizado para imitar el diseño original de forma robusta.
-    """
+    st.title("Mi Equipo - Mister Fantasy ⚽")
     soup = BeautifulSoup(team_html_content, 'html.parser')
-
+    
     # --- 1. Mostrar métricas del equipo ---
-    variations = get_daily_variations(players)
+    with st.spinner('Calculando variaciones de mercado...'):
+        variations = get_daily_variations(players)
     total_variation = sum(variations.values())
-
+    
     col1, col2, col3, col4 = st.columns(4)
     col1.metric("Saldo Actual", summary['balance'])
     col2.metric("Valor del Equipo", summary['team_value'])
@@ -116,81 +264,24 @@ def show_rebuilt_team_view(players, summary, team_html_content):
 
     # --- 2. Recrear el campo de fútbol y la alineación ---
     st.subheader("Alineación Titular")
-
-    # Extraer IDs de jugadores titulares
     lineup_players_ids = [btn.get('data-id_player') for btn in soup.select('.lineup-starting .lineup-player')]
-
-    # Extraer la formación (líneas)
     lines = {}
     for i in range(4, 0, -1):
         line_div = soup.find('div', class_=f'line-{i}')
         if line_div:
             player_ids_in_line = [btn.get('data-id_player') for btn in line_div.find_all('button')]
-            # Mapear IDs a los datos completos del jugador que ya tenemos
             lines[i] = [p for p in players if p['id'] in player_ids_in_line]
     
-    # Renderizar campo y jugadores con CSS personalizado
-    st.markdown("""
-    <style>
-        .field {
-            background: linear-gradient(to bottom, #006400, #004d00);
-            border-radius: 10px;
-            padding: 20px 10px;
-            border: 2px solid #C8E6C9;
-            position: relative;
-        }
-        .field::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
-            border-top: 2px solid rgba(255, 255, 255, 0.3);
-        }
-        .field-circle {
-            width: 120px;
-            height: 120px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-        .player-card {
-            text-align: center;
-            color: white;
-            margin-bottom: 10px;
-        }
-        .player-card img {
-            border-radius: 50%;
-            border: 2px solid white;
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-        .player-card .name {
-            font-size: 0.8rem;
-            font-weight: bold;
-            background-color: rgba(0, 0, 0, 0.6);
-            padding: 2px 6px;
-            border-radius: 5px;
-            display: inline-block;
-            margin-top: 4px;
-        }
-    </style>
-    """, unsafe_allow_html=True)
-
     with st.container():
         st.markdown('<div class="field"><div class="field-circle"></div>', unsafe_allow_html=True)
-        # Iterar en orden inverso para que los delanteros aparezcan arriba
         for i in sorted(lines.keys(), reverse=True):
             players_in_line = lines[i]
             if not players_in_line: continue
-            
             cols = st.columns(len(players_in_line))
             for idx, player in enumerate(players_in_line):
                 with cols[idx]:
                     st.markdown(f"""
-                    <div class="player-card">
+                    <div class="player-card-on-pitch">
                         <img src="{player['photoUrl']}" width="70">
                         <div class="name">{player['name']}</div>
                     </div>
@@ -199,10 +290,9 @@ def show_rebuilt_team_view(players, summary, team_html_content):
                         st.query_params['player_id'] = player['id']
                         st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
-    
     st.divider()
 
-    # --- 3. Mostrar la lista completa de la plantilla ---
+    # --- 3. Mostrar la lista completa de la plantilla en tarjetas ---
     st.subheader("Plantilla Completa")
     
     for i in range(0, len(players), 4):
@@ -211,41 +301,44 @@ def show_rebuilt_team_view(players, summary, team_html_content):
             if i + j < len(players):
                 player = players[i+j]
                 with cols[j]:
-                    st.image(player['photoUrl'], width=80)
-                    st.markdown(f"**{player['name']}**")
                     variation = variations.get(player['id'], 0)
-                    delta_text = f"{format_currency(variation)}"
+                    delta_color = "positive" if variation >= 0 else "negative"
+                    delta_symbol = "▲" if variation >= 0 else "▼"
                     
-                    st.metric(
-                        label=f"{format_currency(player['value'])}",
-                        value=f"Pts: {player['points']} | Media: {player['avg_points']}",
-                        delta=delta_text,
-                        delta_color=("inverse" if variation < 0 else "normal")
-                    )
+                    card_html = f"""
+                    <div class="squad-card">
+                        <div>
+                            <img src="{player['photoUrl']}" width="80" style="border-radius: 50%;">
+                            <div class="name">{player['name']}</div>
+                            <div class="value">{format_currency(player['value'])}</div>
+                            <div class="stats">Pts: {player['points']} | Media: {player['avg_points']}</div>
+                            <div class="delta {delta_color}">{delta_symbol} {format_currency(abs(variation))}</div>
+                        </div>
+                    """
+                    st.markdown(card_html, unsafe_allow_html=True)
                     if st.button("Ver Detalles", key=f"btn_squad_{player['id']}"):
                         st.query_params['player_id'] = player['id']
                         st.rerun()
+                    st.markdown("</div>", unsafe_allow_html=True)
 
 
 def show_player_details_view(player_id):
-    """Muestra la vista de detalles de un jugador específico."""
-    
-    # Botón para volver a la vista del equipo
     if st.button("⬅️ Volver a la plantilla"):
         st.query_params.clear()
         st.rerun()
 
-    with st.spinner(f"Cargando detalles del jugador ID: {player_id}..."):
-        # Cargar datos del jugador desde la API
-        json_data = api.get_player_details(player_id)
+    with st.spinner(f"Cargando detalles del jugador..."):
+        json_data = get_player_details_cached(player_id)
 
     if not json_data or json_data.get('status') != 'ok':
         st.error("No se pudieron obtener los datos del jugador.")
         st.stop()
 
-    # --- Extracción y preparación de datos ---
     data = json_data.get('data', {})
     player_info = data.get('player', {})
+    st.title(f"Ficha de {player_info.get('name', 'N/A')} ⚽")
+    
+    # Resto de la función de detalles sin cambios...
     player_bio = player_info.get('bio', {})
     market_value = player_info.get('value')
     values_summary = data.get('values', [])
@@ -253,7 +346,6 @@ def show_player_details_view(player_id):
     prices_data = data.get('values_chart', {}).get('points', [])
     next_match_data = data.get('next_match', {}).get(str(player_info.get('id')))
 
-    # --- Barra lateral con información del jugador ---
     st.sidebar.image(player_info.get('photoUrl'), width=120)
     st.sidebar.header(player_info.get('name', 'N/A'))
     st.sidebar.subheader(f"*{player_info.get('team', {}).get('name', 'N/A')}*")
@@ -262,8 +354,6 @@ def show_player_details_view(player_id):
     st.sidebar.markdown(f"**Altura:** {player_bio.get('height', 'N/A')} cm")
     st.sidebar.markdown(f"**Peso:** {player_bio.get('weight', 'N/A')} kg")
 
-    # --- Cuerpo Principal ---
-    st.title(f"Dashboard de {player_info.get('name', 'N/A')} ⚽")
     st.subheader("Datos de Mercado")
     col1, col2, col3 = st.columns(3)
     with col1:
@@ -281,51 +371,25 @@ def show_player_details_view(player_id):
             st.caption(match_time)
         else:
             st.metric(label="Próximo Partido", value="No disponible")
-
-    # --- Gráfico ---
     st.subheader("Historial de Valor de Mercado")
     if prices_data:
         df_prices = pd.DataFrame(prices_data)
-        
-        month_map = {
-            'ene': 'Jan', 'feb': 'Feb', 'mar': 'Mar', 'abr': 'Apr', 'may': 'May', 'jun': 'Jun',
-            'jul': 'Jul', 'ago': 'Aug', 'sept': 'Sep', 'sep': 'Sep', 'oct': 'Oct', 'nov': 'Nov', 'dic': 'Dec'
-        }
-        
+        month_map = {'ene': 'Jan', 'feb': 'Feb', 'mar': 'Mar', 'abr': 'Apr', 'may': 'May', 'jun': 'Jun', 'jul': 'Jul', 'ago': 'Aug', 'sept': 'Sep', 'sep': 'Sep', 'oct': 'Oct', 'nov': 'Nov', 'dic': 'Dec'}
         date_series = df_prices['date'].str.lower()
-        for esp, eng in month_map.items():
-            date_series = date_series.str.replace(esp, eng, regex=False)
-        
+        for esp, eng in month_map.items(): date_series = date_series.str.replace(esp, eng, regex=False)
         df_prices['date'] = pd.to_datetime(date_series, format='%d %b %Y')
-
-        chart = alt.Chart(df_prices).mark_line(
-            point=alt.OverlayMarkDef(color="#1DB954", size=40), color="#1DB954"
-        ).encode(
-            x=alt.X('date:T', title='Fecha'),
-            y=alt.Y('value:Q', title='Valor de Mercado (€)', scale=alt.Scale(zero=False)),
-            tooltip=[alt.Tooltip('date:T', title='Fecha'), alt.Tooltip('value:Q', title='Valor', format=',.0f')]
-        ).interactive()
+        chart = alt.Chart(df_prices).mark_line(point=alt.OverlayMarkDef(color="#1DB954", size=40), color="#1DB954").encode(x=alt.X('date:T', title='Fecha'), y=alt.Y('value:Q', title='Valor de Mercado (€)', scale=alt.Scale(zero=False)), tooltip=[alt.Tooltip('date:T', title='Fecha'), alt.Tooltip('value:Q', title='Valor', format=',.0f')]).interactive()
         st.altair_chart(chart, use_container_width=True)
-    else:
-        st.warning("No hay datos de historial de precios para mostrar.")
-
+    else: st.warning("No hay datos de historial de precios para mostrar.")
     st.divider()
-
-    # --- Dos columnas para tablas de datos ---
     col_values, col_points = st.columns(2)
     with col_values:
         st.subheader("Historial de Valores")
         if values_summary:
             df_values = pd.DataFrame(values_summary)
-            df_values['change_formatted'] = df_values['change'].apply(
-                lambda x: f"{x:+,.0f}".replace(",", ".") if isinstance(x, (int, float)) else x
-            )
-            st.dataframe(df_values[['time', 'change_formatted']],
-                         column_config={"time": "Periodo", "change_formatted": "Variación"},
-                         use_container_width=True, hide_index=True)
-        else:
-            st.warning("No hay resumen de valores disponible.")
-
+            df_values['change_formatted'] = df_values['change'].apply(lambda x: f"{x:+,.0f}".replace(",", ".") if isinstance(x, (int, float)) else x)
+            st.dataframe(df_values[['time', 'change_formatted']], column_config={"time": "Periodo", "change_formatted": "Variación"}, use_container_width=True, hide_index=True)
+        else: st.warning("No hay resumen de valores disponible.")
     with col_points:
         st.subheader("Historial de Puntos")
         if points_history:
@@ -333,45 +397,41 @@ def show_player_details_view(player_id):
             df_points['avg'] = df_points['avg'].apply(lambda x: f"{x:.2f}")
             df_points = df_points.rename(columns={'season': 'Temporada', 'points': 'Puntos', 'avg': 'Media'})
             st.dataframe(df_points, use_container_width=True, hide_index=True)
-        else:
-            st.warning("No hay historial de puntos disponible.")
+        else: st.warning("No hay historial de puntos disponible.")
 
 
-def get_daily_variations(players):
+@st.cache_data(ttl=3600)
+def get_daily_variations(_players):
     """
     Obtiene la variación de valor de mercado del último día para una lista de jugadores.
     Muestra un spinner en Streamlit durante la carga.
     """
     variations = {}
-    with st.spinner('Calculando variaciones de mercado...'):
-        for player in players:
-            player_id = player['id']
-            details = api.get_player_details(player_id)
-            if details and details.get('status') == 'ok':
-                values_summary = details.get('data', {}).get('values', [])
-                # Buscar la variación de 'Un día'
-                daily_change = next((item['change'] for item in values_summary if item.get('time') == 'Un día'), 0)
-                variations[player_id] = daily_change
+    for player in _players:
+        player_id = player['id']
+        details = get_player_details_cached(player_id)
+        if details and details.get('status') == 'ok':
+            values_summary = details.get('data', {}).get('values', [])
+            # Buscar la variación de 'Un día'
+            daily_change = next((item['change'] for item in values_summary if item.get('time') == 'Un día'), 0)
+            variations[player_id] = daily_change
     return variations
 
 
 # --- Lógica principal de la aplicación ---
+load_css()
+
 if "player_id" in st.query_params:
     show_player_details_view(st.query_params["player_id"])
 else:
-    st.title("Mi Equipo - Mister Fantasy ⚽")
-    team_html_content = api.get_team()
-    
+    team_html_content = get_team_html_cached()
     if not team_html_content:
         st.error("No se pudo obtener la información del equipo.")
         st.stop()
-        
     parsed_data = parse_team_html(team_html_content)
     players = parsed_data['players']
     summary = parsed_data['summary']
-    
     if not players:
         st.error("No se pudieron encontrar jugadores en la página del equipo.")
         st.stop()
-
     show_rebuilt_team_view(players, summary, team_html_content)

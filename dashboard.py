@@ -112,7 +112,7 @@ def show_team_view(players):
                 st.caption(f"Valor: {format_currency(player['value'])}")
 
                 if st.button("Ver detalles", key=f"btn_{player['id']}"):
-                    st.session_state.selected_player_id = player['id']
+                    st.query_params['player_id'] = player['id']
                     st.rerun()
         
         st.divider()
@@ -123,7 +123,7 @@ def show_player_details_view(player_id):
     
     # Botón para volver a la vista del equipo
     if st.button("⬅️ Volver a la plantilla"):
-        del st.session_state.selected_player_id
+        st.query_params.clear()
         st.rerun()
 
     # Cargar datos del jugador desde la API
@@ -227,17 +227,112 @@ def show_player_details_view(player_id):
             st.warning("No hay historial de puntos disponible.")
 
 
+def get_daily_variations(players):
+    """
+    Obtiene la variación de valor de mercado del último día para una lista de jugadores.
+    Muestra un spinner en Streamlit durante la carga.
+    """
+    variations = {}
+    with st.spinner('Calculando variaciones de mercado...'):
+        for player in players:
+            player_id = player['id']
+            details = api.get_player_details(player_id)
+            if details and details.get('status') == 'ok':
+                values_summary = details.get('data', {}).get('values', [])
+                # Buscar la variación de 'Un día'
+                daily_change = next((item['change'] for item in values_summary if item.get('time') == 'Un día'), 0)
+                variations[player_id] = daily_change
+    return variations
+
+
 # --- Lógica principal de la aplicación ---
-if 'selected_player_id' in st.session_state:
-    show_player_details_view(st.session_state.selected_player_id)
+if "player_id" in st.query_params:
+    show_player_details_view(st.query_params["player_id"])
 else:
-    # Cargar y parsear el HTML del equipo
-    team_html = api.get_team()
-    if team_html:
-        players = parse_team_html(team_html)
-        if players:
-            show_team_view(players)
-        else:
-            st.error("No se pudieron encontrar jugadores en la página del equipo.")
-    else:
+    team_html_content = api.get_team()
+    
+    if not team_html_content:
         st.error("No se pudo obtener la información del equipo.")
+        st.stop()
+        
+    players = parse_team_html(team_html_content)
+    
+    if not players:
+        st.error("No se pudieron encontrar jugadores en la página del equipo.")
+        st.stop()
+
+    variations = get_daily_variations(players)
+    total_variation = sum(variations.values())
+
+    soup = BeautifulSoup(team_html_content, 'html.parser')
+
+    # Inyectar la variación total
+    total_variation_html = f"""
+    <div class="custom-variation-total">
+        <h3>Variación total del equipo (último día)</h3>
+        <p class="{ 'positive' if total_variation >= 0 else 'negative' }">
+            {format_currency(total_variation)}
+        </p>
+    </div>
+    """
+    header = soup.find('header')
+    if header:
+        header.insert_after(BeautifulSoup(total_variation_html, 'html.parser'))
+
+    # Inyectar variaciones individuales y modificar enlaces
+    for player in players:
+        player_id = player['id']
+        player_li = soup.find('li', id=f'player-{player_id}')
+        if player_li:
+            variation = variations.get(player_id, 0)
+            
+            # Crear el HTML para la variación
+            variation_html = f"""
+            <div class="player-variation { 'positive' if variation >= 0 else 'negative' }">
+                {format_currency(variation)}
+            </div>
+            """
+            
+            # Inyectar la variación
+            under_name_div = player_li.find('div', class_='underName')
+            if under_name_div:
+                under_name_div.insert_after(BeautifulSoup(variation_html, 'html.parser'))
+
+            # Modificar el enlace del jugador
+            player_link = player_li.find('a', class_='player')
+            if player_link:
+                player_link['href'] = f'/?player_id={player_id}'
+                if 'data-event' in player_link.attrs:
+                    del player_link['data-event'] # Evitar conflictos JS
+
+    # Inyectar CSS personalizado
+    custom_css = """
+    <style>
+        .custom-variation-total {
+            text-align: center;
+            padding: 20px;
+            background-color: #1e1e2f;
+            border-radius: 8px;
+            margin: 20px;
+        }
+        .custom-variation-total h3 {
+            margin: 0;
+            color: #fff;
+        }
+        .custom-variation-total p {
+            font-size: 2em;
+            margin: 10px 0 0 0;
+            font-weight: bold;
+        }
+        .player-variation {
+            font-weight: bold;
+            text-align: right;
+        }
+        .positive { color: #28a745; }
+        .negative { color: #dc3545; }
+    </style>
+    """
+    soup.head.append(BeautifulSoup(custom_css, 'html.parser'))
+
+    # Mostrar el HTML modificado
+    st.components.v1.html(str(soup), height=1200, scrolling=True)

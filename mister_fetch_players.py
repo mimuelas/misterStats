@@ -106,3 +106,19 @@ class MisterAPI:
         post_data = {'post': 'users', 'id': user_id, 'slug': user_slug, 'comments': comments}
         return self._request("POST", "/ajax/sw/users", post_data=post_data)
 
+    def community_check(self):
+        """
+        Comprueba si hay novedades en la comunidad (nuevos mensajes, pujas, etc).
+        Devuelve JSON.
+        """
+        return self._request("POST", "/ajax/community-check")
+
+    def get_player_twig_template(self):
+        """
+        Obtiene la plantilla HTML de un jugador. Endpoint de prueba.
+        Devuelve HTML.
+        """
+        import time
+        timestamp = int(time.time() * 1000)
+        return self._request("GET", f"/views/ajax/players.twig?{timestamp}")
+

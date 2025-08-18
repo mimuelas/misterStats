@@ -51,6 +51,7 @@ class MisterAPI:
             else:
                 response = self.session.get(url)
             
+            print(f"Request to {url} completed with status: {response.status_code}") # DEBUG
             response.raise_for_status()
             
             try:

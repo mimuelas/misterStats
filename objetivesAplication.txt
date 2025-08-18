@@ -1,0 +1,65 @@
+pestañas aplicacion:
+	Inicio:
+		- Muestra histórico de todo, puediendo filtrar por categorias: ventas, clausulazos, cesiones, nueva gente en el mercado, movimiento de jugadores a otros equipos, o cualquier tipo de novedad (quiniela etc)
+		
+	Mercado:
+		- Muestra la gente en venta, puedes filtrar y ordenar por diferentes factores: precio, libres  o no, posicion, equipo, etc. Puedo ver tambien saldo actual y deuda máxima.
+		- Para cada jugador debe mostrar: Cuanto sube de ayer a hoy, % de probabilidades de titular (o booleano nose), puntos de media año pasado, puntos de media este , si el jugador es libre o a quien pertenece 
+		
+	Mi plantilla:
+		- Muestra mi saldo actual, el valor de mi equipo, cuantos jugadores tengo y la suma del cambio de valor de ayer a hoy a todos mis jugadores 
+		- Muestra un campo de futbol mostrando los jugadores que tengo seleccionados como titulares 
+		- Para cada jugador debe mostrar: Cuanto sube de ayer a hoy, % de probabilidades de titular (o booleano nose), puntos de media año pasado, puntos de media este año
+		
+	Clasificacion:
+		- Mostramos puntuacion, valor de equipo y posicion de cada uno de los integrantes de la liga. 
+		- Si clico en cualquier miembro de la liga me sale su plantilla entera .
+		
+	Analisis:
+		- Poder ver oportunidades de todo tipo respecto al reto:
+			Ver que jugadores peude merecer la pena robarles 
+			Ver como van ellos economicamente y hacer comparativas a ver quien va mejor
+			Posibles noticias impactantes
+			etc. Innovar aqui
+			
+Pasos a seguir:
+	recolectar todos los endpoints con toda la posible info 
+	ver como hacemos con los endpoints que devuelven html 
+	ver si hay que persistir algo para poder tener la info de todos los concursantes de la liga 
+	organizar todo de la mejor manera para que sea viable
+	generar el front de la aplicacion 
+
+Info extra:
+	Si en mercado o en plantilla clico en un jugador, me lleva  a la ficha tecnica del jugador. Si clico en el escudo de su eqeuipo me lleva a la info de su equipo. Debe haber hipervínculos en todos lados 
+	Importante ver como obtenemos toda la info. Parte viene en html. 
+	Igual hay que persistir la info de los participantes de la liga del mister para poder tener una aplicacion funcional 100%?
+	Investigar si expiran las cookies 
+	Copiar estilos  mister usando el html de las peticiones 
+
+Estar atento a nuevos casos de usos para añadir aqui la funcionalidad. 
+
+Endpoints actuales: 
+
+    def get_team(self):
+        """Obtiene la información del equipo del usuario (devuelve HTML)."""
+        return self._request("GET", "/team")
+
+    def get_market(self):
+        """Obtiene la información del mercado (devuelve HTML)."""
+        return self._request("GET", "/market")
+
+    def get_standings(self):
+        """Obtiene la clasificación de la liga (devuelve HTML)."""
+        return self._request("GET", "/standings")
+		
+	def get_balance(self):
+        """Obtiene el balance de la cuenta."""
+        return self._request("GET", "/ajax/balance")
+		
+	def get_player_details(self, player_id):
+        """Obtiene los detalles de un jugador específico por su ID."""
+        post_data = {'post': 'players', 'id': player_id}
+        return self._request("POST", "/ajax/sw/players", post_data=post_data)
+		
+		
+		

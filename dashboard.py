@@ -31,8 +31,11 @@ def load_user_details(user_id, user_slug):
     return api.get_user_details(user_id, user_slug)
 
 # --- Funciones de Ayuda ---
-def process_players(players_data):
-    """Procesa una lista o diccionario de jugadores y devuelve un DataFrame."""
+def process_players(players_data, all_players_map=None):
+    """
+    Procesa una lista o diccionario de jugadores y devuelve un DataFrame.
+    Si se proporciona 'all_players_map', lo utiliza para obtener el valor del jugador.
+    """
     if not players_data:
         return pd.DataFrame()
 
@@ -42,6 +45,9 @@ def process_players(players_data):
     if isinstance(players_data, dict) and 'positions' in players_data:
         for position_group in players_data['positions'].values():
             for player in position_group.values():
+                # Si tenemos el mapa, buscamos el valor del jugador ahí
+                if all_players_map and player.get('id') in all_players_map:
+                    player['value'] = all_players_map[player['id']].get('value', 0)
                 players_list.append(player)
     # Si es un diccionario de jugadores (como en 'bench')
     elif isinstance(players_data, dict):
@@ -54,7 +60,7 @@ def process_players(players_data):
         {
             "Jugador": f"{player.get('name', 'N/A')}",
             "Posición": POSITION_MAP.get(player.get('position'), 'N/A'),
-            "Puntos": player.get('points', 0),
+            "Puntos": str(player.get('points', 0)),
             "Valor": f"{player.get('value', player.get('price', 0)):,} €"
         }
         for player in players_list
@@ -101,6 +107,10 @@ def render_user_details_view(user):
         data = user_details.get('data', {})
         user_info = data.get('userInfo', {})
         
+        # Crear un mapa de todos los jugadores por su ID para buscar valores fácilmente
+        all_players_list = data.get('team_now', [])
+        all_players_map = {player['id']: player for player in all_players_list}
+
         # --- Cabecera del Usuario ---
         col1, col2 = st.columns([1, 4])
         with col1:
@@ -140,7 +150,7 @@ def render_user_details_view(user):
 
         # --- Alineación y Banquillo ---
         st.header("Alineación")
-        lineup_df = process_players(data.get('lineup', {}))
+        lineup_df = process_players(data.get('lineup', {}), all_players_map)
         if not lineup_df.empty:
             st.dataframe(lineup_df, use_container_width=True, hide_index=True)
         else:

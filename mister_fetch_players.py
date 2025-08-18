@@ -26,7 +26,8 @@ class MisterAPI:
             "sec-fetch-site": "same-origin",
             "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36",
             "x-auth": "596bd4e0ffacb9c557238afd0c58845c",
-            "x-requested-with": "XMLHttpRequest"
+            "x-requested-with": "XMLHttpRequest",
+            "partial-request": "true"
         })
 
         # Cookies extraídas.
@@ -66,19 +67,26 @@ class MisterAPI:
         return self._request("GET", "/ajax/balance")
 
     def get_team(self):
-        """Obtiene la información del equipo del usuario (devuelve HTML)."""
+        """Obtiene la información del equipo del usuario. Devuelve HTML."""
         return self._request("GET", "/team")
 
     def get_market(self):
-        """Obtiene la información del mercado (devuelve HTML)."""
+        """Obtiene la información del mercado. Devuelve HTML."""
         return self._request("GET", "/market")
 
     def get_standings(self):
-        """Obtiene la clasificación de la liga (devuelve HTML)."""
+        """Obtiene la clasificación de la liga. Devuelve HTML."""
         return self._request("GET", "/standings")
 
+    def get_feed(self):
+        """Obtiene el feed de noticias y eventos. Devuelve HTML o JSON."""
+        return self._request("POST", "/feed")
+
     def get_player_details(self, player_id):
-        """Obtiene los detalles de un jugador específico por su ID."""
+        """
+        Obtiene los detalles de un jugador específico por su ID.
+        Devuelve JSON.
+        """
         post_data = {'post': 'players', 'id': player_id}
         return self._request("POST", "/ajax/sw/players", post_data=post_data)
 

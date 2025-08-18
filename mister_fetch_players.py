@@ -90,3 +90,19 @@ class MisterAPI:
         post_data = {'post': 'players', 'id': player_id}
         return self._request("POST", "/ajax/sw/players", post_data=post_data)
 
+    def get_team_details(self, team_id, team_slug, comments=0):
+        """
+        Obtiene los detalles de un equipo específico por su ID y slug.
+        Devuelve JSON.
+        """
+        post_data = {'post': 'teams', 'id': team_id, 'slug': team_slug, 'comments': comments}
+        return self._request("POST", "/ajax/sw/teams", post_data=post_data)
+
+    def get_user_details(self, user_id, user_slug, comments=0):
+        """
+        Obtiene los detalles de un usuario/rival específico por su ID y slug.
+        Devuelve JSON.
+        """
+        post_data = {'post': 'users', 'id': user_id, 'slug': user_slug, 'comments': comments}
+        return self._request("POST", "/ajax/sw/users", post_data=post_data)
+

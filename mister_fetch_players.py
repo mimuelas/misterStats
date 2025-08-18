@@ -113,12 +113,3 @@ class MisterAPI:
         """
         return self._request("POST", "/ajax/community-check")
 
-    def get_player_twig_template(self):
-        """
-        Obtiene la plantilla HTML de un jugador. Endpoint de prueba.
-        Devuelve HTML.
-        """
-        import time
-        timestamp = int(time.time() * 1000)
-        return self._request("GET", f"/views/ajax/players.twig?{timestamp}")
-

@@ -82,19 +82,3 @@ def parse_users_from_standings(html_content):
         })
                 
     return users
-
-def parse_first_player_id_from_team(html_content):
-    """
-    Parsea el HTML de la página del equipo para extraer el ID del primer jugador.
-    
-    Args:
-        html_content (str): El contenido HTML de la página /team.
-
-    Returns:
-        str: El ID del primer jugador encontrado, o None si no se encuentra.
-    """
-    soup = BeautifulSoup(html_content, 'html.parser')
-    player_link = soup.find('a', class_='player-link')
-    if player_link and player_link.get('data-id'):
-        return player_link.get('data-id')
-    return None

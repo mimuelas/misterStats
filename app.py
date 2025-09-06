@@ -22,27 +22,333 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# CSS personalizado
+# CSS personalizado profesional
 st.markdown("""
 <style>
-    .main-header {
-        text-align: center;
-        padding: 2rem 0;
-        background: linear-gradient(90deg, #1f4e79, #2d5a87);
-        color: white;
-        border-radius: 10px;
-        margin-bottom: 2rem;
+/* Importar fuentes de Google */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* Variables CSS */
+:root {
+    --primary-color: #1e40af;
+    --secondary-color: #3b82f6;
+    --accent-color: #f59e0b;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
+    --dark-bg: #0f172a;
+    --card-bg: #ffffff;
+    --text-primary: #1f2937;
+    --text-secondary: #6b7280;
+    --border-color: #e5e7eb;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    --border-radius: 12px;
+    --border-radius-lg: 16px;
+}
+
+/* Reset y base */
+.main .block-container {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    max-width: 1200px;
+}
+
+/* Header principal */
+.main-header {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    padding: 2rem;
+    border-radius: var(--border-radius-lg);
+    margin-bottom: 2rem;
+    text-align: center;
+    color: white;
+    box-shadow: var(--shadow-xl);
+    position: relative;
+    overflow: hidden;
+}
+
+.main-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+    opacity: 0.3;
+}
+
+.main-header h1 {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 2.5rem;
+    margin: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.main-header p {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 1.1rem;
+    margin: 0.5rem 0 0 0;
+    opacity: 0.9;
+    position: relative;
+    z-index: 1;
+}
+
+/* Pestañas personalizadas */
+.stTabs [data-baseweb="tab-list"] {
+    gap: 8px;
+    margin-bottom: 2rem;
+}
+
+.stTabs [data-baseweb="tab"] {
+    background: var(--card-bg);
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 0.75rem 1.5rem;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 1rem;
+    color: var(--text-secondary);
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-sm);
+}
+
+.stTabs [data-baseweb="tab"]:hover {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.stTabs [aria-selected="true"] {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Métricas del feed */
+.feed-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.metric-card {
+    background: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color);
+    text-align: center;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.metric-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+}
+
+.metric-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-xl);
+}
+
+.metric-value {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 2rem;
+    color: var(--primary-color);
+    margin: 0;
+}
+
+.metric-label {
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin: 0.5rem 0 0 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Elementos del feed */
+.feed-container {
+    background: var(--card-bg);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+}
+
+.feed-item {
+    background: var(--card-bg);
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.feed-item:last-child {
+    border-bottom: none;
+}
+
+.feed-item:hover {
+    background: #f8fafc;
+    transform: translateX(4px);
+}
+
+.feed-item-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.feed-category {
+    background: var(--primary-color);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.feed-date {
+    color: var(--text-secondary);
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 0.9rem;
+}
+
+.feed-content {
+    font-family: 'Inter', sans-serif;
+    line-height: 1.6;
+}
+
+.feed-content h3 {
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin: 0 0 0.5rem 0;
+}
+
+.feed-content p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin: 0;
+}
+
+/* Botones personalizados */
+.stButton > button {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    padding: 0.75rem 1.5rem;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-md);
+    width: 100%;
+}
+
+.stButton > button:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Spinner personalizado */
+.stSpinner {
+    color: var(--primary-color);
+}
+
+/* Alertas personalizadas */
+.stSuccess {
+    background: linear-gradient(135deg, var(--success-color), #34d399);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+}
+
+.stInfo {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+}
+
+.stWarning {
+    background: linear-gradient(135deg, var(--warning-color), #fbbf24);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+}
+
+/* Scroll personalizado */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--border-color);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--secondary-color);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .main-header h1 {
+        font-size: 2rem;
     }
+    
+    .feed-metrics {
+        grid-template-columns: 1fr;
+    }
+    
     .metric-card {
-        background: #f8f9fa;
         padding: 1rem;
-        border-radius: 8px;
-        border-left: 4px solid #007bff;
     }
-    .stButton > button {
-        width: 100%;
-        border-radius: 20px;
+    
+    .feed-item {
+        padding: 1rem;
     }
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -81,78 +387,107 @@ def render_home_tab(data_service):
     if st.session_state.all_feed_items:
         st.success(f"✅ Feed cargado: {len(st.session_state.all_feed_items)} elementos")
         
-        # Mostrar resumen
+        # Mostrar métricas del feed con estilos personalizados
+        st.markdown('<div class="feed-metrics">', unsafe_allow_html=True)
         col1, col2, col3, col4 = st.columns(4)
         with col1:
-            st.metric("Total Elementos", len(st.session_state.all_feed_items))
+            st.markdown(f'''
+            <div class="metric-card">
+                <div class="metric-value">{len(st.session_state.all_feed_items)}</div>
+                <div class="metric-label">Total Elementos</div>
+            </div>
+            ''', unsafe_allow_html=True)
         with col2:
             transfers = len([item for item in st.session_state.all_feed_items if item.get('category') == 'transfer'])
-            st.metric("Transferencias", transfers)
+            st.markdown(f'''
+            <div class="metric-card">
+                <div class="metric-value">{transfers}</div>
+                <div class="metric-label">Transferencias</div>
+            </div>
+            ''', unsafe_allow_html=True)
         with col3:
             player_transfers = len([item for item in st.session_state.all_feed_items if item.get('category') == 'player_transfer'])
-            st.metric("Cambios de Equipo", player_transfers)
+            st.markdown(f'''
+            <div class="metric-card">
+                <div class="metric-value">{player_transfers}</div>
+                <div class="metric-label">Cambios de Equipo</div>
+            </div>
+            ''', unsafe_allow_html=True)
         with col4:
             posts = len([item for item in st.session_state.all_feed_items if item.get('category') == 'post'])
-            st.metric("Mensajes", posts)
+            st.markdown(f'''
+            <div class="metric-card">
+                <div class="metric-value">{posts}</div>
+                <div class="metric-label">Mensajes</div>
+            </div>
+            ''', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
         
         # ===== FEED CRONOLÓGICO =====
         st.subheader("📰 Feed de Actividad")
+        
+        # Contenedor del feed con estilos
+        st.markdown('<div class="feed-container">', unsafe_allow_html=True)
         
         # Mostrar todos los elementos en orden cronológico
         for item in st.session_state.all_feed_items:
             category = item.get('category', 'unknown')
             date = item.get('date', 'N/A')
             
-            # Crear contenedor para cada elemento
-            with st.container():
-                if category == 'transfer':
-                    transfer_info = item.get('transfer_info', {})
-                    if transfer_info:
-                        col1, col2, col3 = st.columns([2, 1, 2])
-                        with col1:
-                            st.write(f"**{transfer_info.get('from_user', 'N/A')}**")
-                        with col2:
-                            st.write(f"→ {transfer_info.get('price', 0):,} €")
-                        with col3:
-                            st.write(f"**{transfer_info.get('to_user', 'N/A')}**")
-                        
-                        player_name = transfer_info.get('player_name')
-                        if player_name:
-                            st.write(f"⚽ {player_name} - {date}")
-                        else:
-                            st.write(f"💰 Transferencia - {date}")
-                
-                elif category == 'player_transfer':
-                    transfer_info = item.get('player_transfer_info', {})
-                    if transfer_info:
-                        col1, col2, col3 = st.columns([2, 1, 2])
-                        with col1:
-                            st.write(f"**{transfer_info.get('team_from', 'N/A')}**")
-                        with col2:
-                            st.write(f"→")
-                        with col3:
-                            st.write(f"**{transfer_info.get('team_to', 'N/A')}**")
-                        
-                        player_name = transfer_info.get('player_name')
-                        if player_name:
-                            st.write(f"⚽ {player_name} - {date}")
-                        else:
-                            st.write(f"🔄 Cambio de equipo - {date}")
-                
-                elif category == 'gameweek_end':
-                    gameweek_info = item.get('gameweek_info', {})
-                    if gameweek_info:
-                        st.write(f"🏁 **Jornada {gameweek_info.get('gameweek_number', 'N/A')} finalizada** - {date}")
-                
-                elif category == 'post':
-                    post_info = item.get('post_info', {})
-                    if post_info:
-                        st.write(f"💬 **{post_info.get('name', 'Usuario')}**: {post_info.get('text', '')[:100]}... - {date}")
-                
-                else:
-                    st.write(f"📋 **{category.replace('_', ' ').title()}** - {date}")
-                
-                st.divider()
+            # Crear elemento del feed con estilos
+            st.markdown(f'''
+            <div class="feed-item">
+                <div class="feed-item-header">
+                    <span class="feed-category">{category.replace('_', ' ').title()}</span>
+                    <span class="feed-date">{date}</span>
+                </div>
+                <div class="feed-content">
+            ''', unsafe_allow_html=True)
+            
+            if category == 'transfer':
+                transfer_info = item.get('transfer_info', {})
+                if transfer_info:
+                    st.markdown(f'''
+                    <h3>💰 Transferencia de Jugador</h3>
+                    <p><strong>{transfer_info.get('from_user', 'N/A')}</strong> → <strong>{transfer_info.get('to_user', 'N/A')}</strong></p>
+                    <p>💵 Precio: {transfer_info.get('price', 0):,} €</p>
+                    <p>⚽ Jugador: {transfer_info.get('player_name', 'N/A')}</p>
+                    ''', unsafe_allow_html=True)
+            
+            elif category == 'player_transfer':
+                transfer_info = item.get('player_transfer_info', {})
+                if transfer_info:
+                    st.markdown(f'''
+                    <h3>🔄 Cambio de Equipo</h3>
+                    <p><strong>{transfer_info.get('team_from', 'N/A')}</strong> → <strong>{transfer_info.get('team_to', 'N/A')}</strong></p>
+                    <p>⚽ Jugador: {transfer_info.get('player_name', 'N/A')}</p>
+                    ''', unsafe_allow_html=True)
+            
+            elif category == 'gameweek_end':
+                gameweek_info = item.get('gameweek_info', {})
+                if gameweek_info:
+                    st.markdown(f'''
+                    <h3>🏁 Jornada Finalizada</h3>
+                    <p>Jornada {gameweek_info.get('gameweek_number', 'N/A')} ha terminado</p>
+                    ''', unsafe_allow_html=True)
+            
+            elif category == 'post':
+                post_info = item.get('post_info', {})
+                if post_info:
+                    st.markdown(f'''
+                    <h3>💬 Mensaje de {post_info.get('name', 'Usuario')}</h3>
+                    <p>{post_info.get('text', '')[:200]}{'...' if len(post_info.get('text', '')) > 200 else ''}</p>
+                    ''', unsafe_allow_html=True)
+            
+            else:
+                st.markdown(f'''
+                <h3>📋 {category.replace('_', ' ').title()}</h3>
+                <p>Información adicional disponible</p>
+                ''', unsafe_allow_html=True)
+            
+            st.markdown('</div></div>', unsafe_allow_html=True)
+        
+        st.markdown('</div>', unsafe_allow_html=True)
         
         # ===== SCROLL INFINITO AUTOMÁTICO =====
         # Usar un botón que se activa automáticamente con JavaScript

@@ -75,6 +75,16 @@ class FeedParser:
             parsed['gameweek_info'] = FeedParser._parse_gameweek_data(data)
         elif item.get('category') == 'post':
             parsed['post_info'] = FeedParser._parse_post_data(data)
+        elif item.get('category') == 'market_unified':
+            parsed['market_info'] = FeedParser._parse_market_data(data)
+        elif item.get('category') == 'change_name':
+            parsed['change_name_info'] = FeedParser._parse_change_name_data(data)
+        elif item.get('category') == 'blog':
+            parsed['blog_info'] = FeedParser._parse_blog_data(data)
+        elif item.get('category') == 'clauses_drops':
+            parsed['clauses_drops_info'] = FeedParser._parse_clauses_drops_data(data)
+        elif item.get('category') == 'porra':
+            parsed['porra_info'] = FeedParser._parse_porra_data(data)
         
         return parsed
     
@@ -133,4 +143,94 @@ class FeedParser:
             'user_id': data.get('id_uc'),
             'segment_id': data.get('id_segment'),
             'expiration_date': data.get('expiration_date')
+        }
+    
+    @staticmethod
+    def _parse_market_data(data: Dict[str, Any]) -> Dict[str, Any]:
+        """Parsea datos de novedades del mercado."""
+        market_items = data.get('market', [])
+        parsed_market = []
+        
+        for item in market_items:
+            player = item.get('player', {})
+            parsed_market.append({
+                'market_id': item.get('id'),
+                'player_id': player.get('id'),
+                'player_name': player.get('name'),
+                'player_position': player.get('position'),
+                'player_team': player.get('id_team'),
+                'player_photo': player.get('avatar'),
+                'player_value': player.get('value'),
+                'player_points': player.get('points'),
+                'expiration_date': item.get('expirationDate'),
+                'date': item.get('date'),
+                'community_id': item.get('communityId'),
+                'bids': item.get('bids', []),
+                'injuries': player.get('injuries', [])
+            })
+        
+        return {
+            'market_items': parsed_market,
+            'total_items': len(parsed_market)
+        }
+    
+    @staticmethod
+    def _parse_change_name_data(data: Dict[str, Any]) -> Dict[str, Any]:
+        """Parsea datos de cambios de nombre."""
+        return {
+            'user_id': data.get('id_uc'),
+            'old_name': data.get('old_name'),
+            'new_name': data.get('new_name'),
+            'user_avatar': data.get('avatar', {}),
+            'segment_id': data.get('id_segment')
+        }
+    
+    @staticmethod
+    def _parse_blog_data(data: Dict[str, Any]) -> Dict[str, Any]:
+        """Parsea datos de entradas de blog."""
+        return {
+            'blog_id': data.get('id'),
+            'title': data.get('title'),
+            'content': data.get('content'),
+            'author': data.get('author'),
+            'author_id': data.get('id_author'),
+            'author_avatar': data.get('avatar', {}),
+            'image_url': data.get('imageUrl'),
+            'excerpt': data.get('excerpt'),
+            'published_date': data.get('published_date'),
+            'segment_id': data.get('id_segment')
+        }
+    
+    @staticmethod
+    def _parse_clauses_drops_data(data: Dict[str, Any]) -> Dict[str, Any]:
+        """Parsea datos de bajas por cláusulas."""
+        return {
+            'player_id': data.get('id'),
+            'player_name': data.get('name'),
+            'player_position': data.get('position'),
+            'player_team': data.get('id_team'),
+            'player_photo': data.get('photoUrl'),
+            'player_value': data.get('value'),
+            'player_points': data.get('points'),
+            'clause_type': data.get('clause_type'),
+            'clause_value': data.get('clause_value'),
+            'team_name': data.get('team_name'),
+            'team_logo': data.get('teamLogoUrl')
+        }
+    
+    @staticmethod
+    def _parse_porra_data(data: Dict[str, Any]) -> Dict[str, Any]:
+        """Parsea datos de apuestas/porras."""
+        return {
+            'porra_id': data.get('id'),
+            'title': data.get('title'),
+            'description': data.get('description'),
+            'creator': data.get('creator'),
+            'creator_id': data.get('id_creator'),
+            'creator_avatar': data.get('avatar', {}),
+            'expiration_date': data.get('expiration_date'),
+            'options': data.get('options', []),
+            'participants': data.get('participants', []),
+            'segment_id': data.get('id_segment'),
+            'status': data.get('status')
         }

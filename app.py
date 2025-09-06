@@ -331,6 +331,47 @@ st.markdown("""
     background: var(--secondary-color);
 }
 
+/* Estilos para nuevas categorías de noticias */
+.market-item {
+    background: #f8f9fa;
+    padding: 0.5rem;
+    border-radius: 4px;
+    margin: 0.25rem 0;
+    border-left: 3px solid #28a745;
+}
+
+.blog-item {
+    background: #fff3cd;
+    padding: 0.5rem;
+    border-radius: 4px;
+    margin: 0.25rem 0;
+    border-left: 3px solid #ffc107;
+}
+
+.clauses-item {
+    background: #f8d7da;
+    padding: 0.5rem;
+    border-radius: 4px;
+    margin: 0.25rem 0;
+    border-left: 3px solid #dc3545;
+}
+
+.porra-item {
+    background: #d1ecf1;
+    padding: 0.5rem;
+    border-radius: 4px;
+    margin: 0.25rem 0;
+    border-left: 3px solid #17a2b8;
+}
+
+.change-name-item {
+    background: #e2e3e5;
+    padding: 0.5rem;
+    border-radius: 4px;
+    margin: 0.25rem 0;
+    border-left: 3px solid #6c757d;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .main-header h1 {
@@ -406,11 +447,11 @@ def render_home_tab(data_service):
             </div>
             ''', unsafe_allow_html=True)
         with col3:
-            player_transfers = len([item for item in st.session_state.all_feed_items if item.get('category') == 'player_transfer'])
+            market_items = len([item for item in st.session_state.all_feed_items if item.get('category') == 'market_unified'])
             st.markdown(f'''
             <div class="metric-card">
-                <div class="metric-value">{player_transfers}</div>
-                <div class="metric-label">Cambios de Equipo</div>
+                <div class="metric-value">{market_items}</div>
+                <div class="metric-label">Mercado</div>
             </div>
             ''', unsafe_allow_html=True)
         with col4:
@@ -419,6 +460,42 @@ def render_home_tab(data_service):
             <div class="metric-card">
                 <div class="metric-value">{posts}</div>
                 <div class="metric-label">Mensajes</div>
+            </div>
+            ''', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+        # Segunda fila de métricas
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            player_transfers = len([item for item in st.session_state.all_feed_items if item.get('category') == 'player_transfer'])
+            st.markdown(f'''
+            <div class="metric-card">
+                <div class="metric-value">{player_transfers}</div>
+                <div class="metric-label">Cambios de Equipo</div>
+            </div>
+            ''', unsafe_allow_html=True)
+        with col2:
+            blog_posts = len([item for item in st.session_state.all_feed_items if item.get('category') == 'blog'])
+            st.markdown(f'''
+            <div class="metric-card">
+                <div class="metric-value">{blog_posts}</div>
+                <div class="metric-label">Blog</div>
+            </div>
+            ''', unsafe_allow_html=True)
+        with col3:
+            clauses_drops = len([item for item in st.session_state.all_feed_items if item.get('category') == 'clauses_drops'])
+            st.markdown(f'''
+            <div class="metric-card">
+                <div class="metric-value">{clauses_drops}</div>
+                <div class="metric-label">Bajas por Cláusulas</div>
+            </div>
+            ''', unsafe_allow_html=True)
+        with col4:
+            porras = len([item for item in st.session_state.all_feed_items if item.get('category') == 'porra'])
+            st.markdown(f'''
+            <div class="metric-card">
+                <div class="metric-value">{porras}</div>
+                <div class="metric-label">Apuestas</div>
             </div>
             ''', unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
@@ -477,6 +554,61 @@ def render_home_tab(data_service):
                     st.markdown(f'''
                     <h3>💬 Mensaje de {post_info.get('name', 'Usuario')}</h3>
                     <p>{post_info.get('text', '')[:200]}{'...' if len(post_info.get('text', '')) > 200 else ''}</p>
+                    ''', unsafe_allow_html=True)
+            
+            elif category == 'market_unified':
+                market_info = item.get('market_info', {})
+                if market_info and 'market_items' in market_info:
+                    st.markdown(f'''
+                    <h3>🏪 Novedades del Mercado</h3>
+                    <p>📊 {market_info.get('total_items', 0)} jugadores en el mercado</p>
+                    ''', unsafe_allow_html=True)
+                    # Mostrar algunos jugadores destacados
+                    for i, market_item in enumerate(market_info.get('market_items', [])[:3]):
+                        st.markdown(f'''
+                        <div class="market-item">
+                            <p>⚽ {market_item.get('player_name', 'N/A')} - {market_item.get('player_position', 'N/A')}</p>
+                            <p>💰 Valor: {market_item.get('player_value', 0):,} € | Puntos: {market_item.get('player_points', 0)}</p>
+                        </div>
+                        ''', unsafe_allow_html=True)
+            
+            elif category == 'change_name':
+                change_info = item.get('change_name_info', {})
+                if change_info:
+                    st.markdown(f'''
+                    <h3>✏️ Cambio de Nombre</h3>
+                    <p><strong>{change_info.get('old_name', 'N/A')}</strong> → <strong>{change_info.get('new_name', 'N/A')}</strong></p>
+                    ''', unsafe_allow_html=True)
+            
+            elif category == 'blog':
+                blog_info = item.get('blog_info', {})
+                if blog_info:
+                    st.markdown(f'''
+                    <h3>📝 Entrada de Blog</h3>
+                    <p><strong>{blog_info.get('title', 'Sin título')}</strong></p>
+                    <p>👤 Autor: {blog_info.get('author', 'N/A')}</p>
+                    <p>{blog_info.get('excerpt', '')[:150]}{'...' if len(blog_info.get('excerpt', '')) > 150 else ''}</p>
+                    ''', unsafe_allow_html=True)
+            
+            elif category == 'clauses_drops':
+                clauses_info = item.get('clauses_drops_info', {})
+                if clauses_info:
+                    st.markdown(f'''
+                    <h3>📉 Baja por Cláusula</h3>
+                    <p>⚽ Jugador: {clauses_info.get('player_name', 'N/A')}</p>
+                    <p>🏢 Equipo: {clauses_info.get('team_name', 'N/A')}</p>
+                    <p>💰 Valor: {clauses_info.get('player_value', 0):,} €</p>
+                    <p>📊 Puntos: {clauses_info.get('player_points', 0)}</p>
+                    ''', unsafe_allow_html=True)
+            
+            elif category == 'porra':
+                porra_info = item.get('porra_info', {})
+                if porra_info:
+                    st.markdown(f'''
+                    <h3>🎲 Apuesta/Porra</h3>
+                    <p><strong>{porra_info.get('title', 'Sin título')}</strong></p>
+                    <p>👤 Creador: {porra_info.get('creator', 'N/A')}</p>
+                    <p>📝 {porra_info.get('description', '')[:100]}{'...' if len(porra_info.get('description', '')) > 100 else ''}</p>
                     ''', unsafe_allow_html=True)
             
             else:

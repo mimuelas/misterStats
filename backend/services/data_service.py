@@ -13,6 +13,7 @@ from backend.models.data_models import (
     Player, UserDetails, StandingsUser, Balance, 
     PlayerSearchFilters, MarketOptions
 )
+from backend.parsers.feed_parser import FeedParser
 
 
 class DataService:
@@ -277,19 +278,19 @@ class DataService:
         
         return None
     
-    def get_feed(self, use_cache: bool = True) -> Optional[str]:
+    def get_feed(self, offset: int = 0, use_cache: bool = True) -> Optional[Dict[str, Any]]:
         """Obtiene el feed de noticias con caché."""
-        cache_key = self._get_cache_key('feed')
+        cache_key = self._get_cache_key('feed', offset=offset)
         
-        if use_cache:
+        if use_cache and offset == 0:  # Solo cachear la primera página
             cached_data = self._get_cached_data(cache_key, 'feed')
             if cached_data:
                 return cached_data
         
-        feed = self.api.get_feed()
-        if feed:
+        feed = self.api.get_feed(offset)
+        if feed and offset == 0:  # Solo cachear la primera página
             self._save_data(cache_key, feed, 'feed')
-            return feed
+        return feed
         
         return None
     
@@ -569,25 +570,28 @@ class DataService:
         
         return None
     
-    def get_feed_parsed(self, use_cache: bool = True) -> Optional[Dict[str, Any]]:
+    def get_feed_parsed(self, offset: int = 0, use_cache: bool = True) -> Optional[Dict[str, Any]]:
         """Obtiene el feed parseado con caché."""
-        cache_key = self._get_cache_key('feed_parsed')
+        cache_key = self._get_cache_key('feed_parsed', offset=offset)
         
-        if use_cache:
+        if use_cache and offset == 0:  # Solo cachear la primera página
             cached_data = self._get_cached_data(cache_key, 'feed')
             if cached_data:
                 return cached_data
         
-        # El feed no tiene parser específico, devolvemos el HTML como dict
-        feed_html = self.api.get_feed()
-        if feed_html:
-            feed_data = {
-                'html': feed_html,
-                'parsed_at': datetime.now().isoformat(),
-                'type': 'feed_html'
-            }
-            self._save_data(cache_key, feed_data, 'feed')
-            return feed_data
+        # El feed ahora devuelve JSON directamente
+        feed_json = self.api.get_feed_parsed(offset)
+        if feed_json:
+            # Parsear los datos del feed
+            parsed_feed = FeedParser.parse_feed_data({
+                'data': feed_json.get('data', []),
+                'status': feed_json.get('status', ''),
+                'offset': offset
+            })
+            
+            if offset == 0:  # Solo cachear la primera página
+                self._save_data(cache_key, parsed_feed, 'feed')
+            return parsed_feed
         
         return None
     

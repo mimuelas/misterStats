@@ -254,21 +254,31 @@ class MisterAPI:
     
     # ==================== ENDPOINTS DE FEED ====================
     
-    def get_feed(self) -> Optional[str]:
+    def get_feed(self, offset: int = 0) -> Optional[Dict[str, Any]]:
         """
         Obtiene el feed de noticias y eventos.
-        Returns: HTML content
+        Args:
+            offset: Número de elementos a saltar para paginación
+        Returns: JSON response
         """
-        return self._request("POST", "/feed")
+        post_data = {
+            "end": "false",
+            "loading": "true", 
+            "offset": str(offset),
+            "cardsPerPage": "20"
+        }
+        return self._request("POST", "/ajax/feed", post_data=post_data)
     
-    def get_feed_parsed(self) -> Optional[Dict[str, Any]]:
+    def get_feed_parsed(self, offset: int = 0) -> Optional[Dict[str, Any]]:
         """
         Obtiene el feed parseado.
+        Args:
+            offset: Número de elementos a saltar para paginación
         Returns: Dict con posts y noticias
         """
-        html = self.get_feed()
-        if html:
-            return HTMLParsers.parse_feed_response(html)
+        json_data = self.get_feed(offset)
+        if json_data and json_data.get('status') == 'ok':
+            return json_data
         return None
     
     # ==================== ENDPOINTS ADICIONALES ====================

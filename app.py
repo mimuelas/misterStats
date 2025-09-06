@@ -1,15 +1,12 @@
 """
-Aplicación principal de Mister Fantasy con navegación por pestañas.
-Incluye 5 pestañas principales: Inicio, Mercado, Equipo, Tabla y Buscar.
+Aplicación Streamlit para Mister Fantasy Stats.
+Dashboard completo con análisis de liga, jugadores, participantes y más.
 """
 
 import streamlit as st
 import sys
 import os
 from datetime import datetime
-import plotly.express as px
-import plotly.graph_objects as go
-import pandas as pd
 
 # Agregar el directorio raíz al path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -25,82 +22,32 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# CSS personalizado para la barra de navegación
+# CSS personalizado
 st.markdown("""
 <style>
     .main-header {
-        background: linear-gradient(90deg, #1e3c72 0%, #2a5298 100%);
-        padding: 1rem;
-        border-radius: 10px;
-        margin-bottom: 2rem;
         text-align: center;
+        padding: 2rem 0;
+        background: linear-gradient(90deg, #1f4e79, #2d5a87);
         color: white;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-    
-    .tab-container {
-        background: #f8f9fa;
         border-radius: 10px;
-        padding: 1rem;
         margin-bottom: 2rem;
     }
-    
     .metric-card {
-        background: white;
+        background: #f8f9fa;
         padding: 1rem;
         border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        border-left: 4px solid #2a5298;
+        border-left: 4px solid #007bff;
     }
-    
-    .player-card {
-        background: white;
-        padding: 1rem;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        margin-bottom: 1rem;
-        border: 1px solid #e9ecef;
-        transition: transform 0.2s;
-    }
-    
-    .player-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-    }
-    
-    .user-card {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 1.5rem;
-        border-radius: 10px;
-        margin-bottom: 1rem;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-    
-    .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1rem;
-        margin-bottom: 2rem;
-    }
-    
-    .search-container {
-        background: white;
-        padding: 1.5rem;
-        border-radius: 10px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        margin-bottom: 2rem;
+    .stButton > button {
+        width: 100%;
+        border-radius: 20px;
     }
 </style>
 """, unsafe_allow_html=True)
 
-@st.cache_data
-def get_data_service():
-    """Obtiene el servicio de datos con caché."""
-    return DataService()
-
 def render_header():
-    """Renderiza el header principal de la aplicación."""
+    """Renderiza el header de la aplicación."""
     st.markdown("""
     <div class="main-header">
         <h1>⚽ Mister Fantasy Stats</h1>
@@ -109,44 +56,170 @@ def render_header():
     """, unsafe_allow_html=True)
 
 def render_home_tab(data_service):
-    """Renderiza la pestaña de Inicio."""
-    st.header("🏠 Inicio")
+    """Renderiza la pestaña de inicio con scroll infinito automático."""
+    st.header("🏠 Inicio - Feed")
     
-    # Obtener datos del feed
-    with st.spinner("Cargando noticias..."):
-        feed_data = data_service.get_feed()
+    # Inicializar session state para scroll infinito
+    if 'feed_offset' not in st.session_state:
+        st.session_state.feed_offset = 0
+    if 'all_feed_items' not in st.session_state:
+        st.session_state.all_feed_items = []
+    if 'loading_more' not in st.session_state:
+        st.session_state.loading_more = False
+    if 'no_more_content' not in st.session_state:
+        st.session_state.no_more_content = False
     
-    if feed_data:
-        st.subheader("📰 Últimas Noticias")
-        st.markdown("""
-        <div class="tab-container">
-            <p>Feed de noticias cargado correctamente. Aquí se mostrarían las últimas noticias y eventos de la comunidad.</p>
-            <p><strong>Tamaño de datos:</strong> {:,} caracteres</p>
-        </div>
-        """.format(len(feed_data)), unsafe_allow_html=True)
+    # Cargar datos iniciales si no hay elementos
+    if not st.session_state.all_feed_items:
+        with st.spinner("Cargando feed inicial..."):
+            feed_data = data_service.get_feed_parsed(offset=0)
+            if feed_data and 'items' in feed_data:
+                st.session_state.all_feed_items = feed_data.get('items', [])
+                st.session_state.feed_offset = 20  # Siguiente página
     
-    # Obtener balance
-    with st.spinner("Cargando balance..."):
-        balance = data_service.get_balance()
-    
-    if balance:
-        st.subheader("💰 Balance de Cuenta")
-        col1, col2, col3 = st.columns(3)
+    # Mostrar todos los elementos cargados
+    if st.session_state.all_feed_items:
+        st.success(f"✅ Feed cargado: {len(st.session_state.all_feed_items)} elementos")
         
+        # Mostrar resumen
+        col1, col2, col3, col4 = st.columns(4)
         with col1:
-            st.metric("Balance Actual", f"{balance.current:,} €")
+            st.metric("Total Elementos", len(st.session_state.all_feed_items))
         with col2:
-            st.metric("Balance Futuro", f"{balance.future:,} €")
+            transfers = len([item for item in st.session_state.all_feed_items if item.get('category') == 'transfer'])
+            st.metric("Transferencias", transfers)
         with col3:
-            st.metric("Deuda Máxima", f"{balance.max_debt:,} €")
+            player_transfers = len([item for item in st.session_state.all_feed_items if item.get('category') == 'player_transfer'])
+            st.metric("Cambios de Equipo", player_transfers)
+        with col4:
+            posts = len([item for item in st.session_state.all_feed_items if item.get('category') == 'post'])
+            st.metric("Mensajes", posts)
+        
+        # ===== FEED CRONOLÓGICO =====
+        st.subheader("📰 Feed de Actividad")
+        
+        # Mostrar todos los elementos en orden cronológico
+        for item in st.session_state.all_feed_items:
+            category = item.get('category', 'unknown')
+            date = item.get('date', 'N/A')
+            
+            # Crear contenedor para cada elemento
+            with st.container():
+                if category == 'transfer':
+                    transfer_info = item.get('transfer_info', {})
+                    if transfer_info:
+                        col1, col2, col3 = st.columns([2, 1, 2])
+                        with col1:
+                            st.write(f"**{transfer_info.get('from_user', 'N/A')}**")
+                        with col2:
+                            st.write(f"→ {transfer_info.get('price', 0):,} €")
+                        with col3:
+                            st.write(f"**{transfer_info.get('to_user', 'N/A')}**")
+                        
+                        player_name = transfer_info.get('player_name')
+                        if player_name:
+                            st.write(f"⚽ {player_name} - {date}")
+                        else:
+                            st.write(f"💰 Transferencia - {date}")
+                
+                elif category == 'player_transfer':
+                    transfer_info = item.get('player_transfer_info', {})
+                    if transfer_info:
+                        col1, col2, col3 = st.columns([2, 1, 2])
+                        with col1:
+                            st.write(f"**{transfer_info.get('team_from', 'N/A')}**")
+                        with col2:
+                            st.write(f"→")
+                        with col3:
+                            st.write(f"**{transfer_info.get('team_to', 'N/A')}**")
+                        
+                        player_name = transfer_info.get('player_name')
+                        if player_name:
+                            st.write(f"⚽ {player_name} - {date}")
+                        else:
+                            st.write(f"🔄 Cambio de equipo - {date}")
+                
+                elif category == 'gameweek_end':
+                    gameweek_info = item.get('gameweek_info', {})
+                    if gameweek_info:
+                        st.write(f"🏁 **Jornada {gameweek_info.get('gameweek_number', 'N/A')} finalizada** - {date}")
+                
+                elif category == 'post':
+                    post_info = item.get('post_info', {})
+                    if post_info:
+                        st.write(f"💬 **{post_info.get('name', 'Usuario')}**: {post_info.get('text', '')[:100]}... - {date}")
+                
+                else:
+                    st.write(f"📋 **{category.replace('_', ' ').title()}** - {date}")
+                
+                st.divider()
+        
+        # ===== SCROLL INFINITO AUTOMÁTICO =====
+        # Usar un botón que se activa automáticamente con JavaScript
+        if not st.session_state.no_more_content:
+            # JavaScript para detectar scroll y activar el botón
+            st.markdown("""
+            <script>
+            // Función para detectar scroll hacia abajo
+            function checkScroll() {
+                if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 1000) {
+                    // Buscar el botón de cargar más
+                    const button = document.querySelector('button[data-testid="baseButton-secondary"]');
+                    if (button && !button.disabled) {
+                        button.click();
+                    }
+                }
+            }
+            
+            // Agregar listener de scroll
+            window.addEventListener('scroll', checkScroll);
+            
+            // Verificar scroll inicial después de un delay
+            setTimeout(checkScroll, 2000);
+            </script>
+            """, unsafe_allow_html=True)
+            
+            # Botón para cargar más contenido (se activa con JavaScript)
+            col1, col2, col3 = st.columns([1, 2, 1])
+            with col2:
+                if st.button("🔄 Cargar Más Contenido", type="secondary", use_container_width=True, key="load_more_btn"):
+                    st.session_state.loading_more = True
+                    st.rerun()
+        
+        # Procesar carga de más contenido
+        if st.session_state.loading_more and not st.session_state.no_more_content:
+            with st.spinner("Cargando más contenido..."):
+                more_feed_data = data_service.get_feed_parsed(offset=st.session_state.feed_offset, use_cache=False)
+                
+                if more_feed_data and 'items' in more_feed_data and len(more_feed_data['items']) > 0:
+                    # Agregar nuevos elementos a la lista
+                    st.session_state.all_feed_items.extend(more_feed_data['items'])
+                    st.session_state.feed_offset += 20
+                    st.success(f"✅ Cargados {len(more_feed_data['items'])} elementos más")
+                    st.session_state.loading_more = False
+                    st.rerun()
+                else:
+                    st.session_state.no_more_content = True
+                    st.info("📭 No hay más contenido disponible")
+                    st.session_state.loading_more = False
+        
+        # Mostrar información de estado
+        if st.session_state.no_more_content:
+            st.info("📭 Has llegado al final del feed")
+        else:
+            st.info(f"📄 Cargados {len(st.session_state.all_feed_items)} elementos (offset: {st.session_state.feed_offset})")
+            
+    else:
+        st.warning("No se pudieron cargar las noticias.")
+
 
 def render_market_tab(data_service):
     """Renderiza la pestaña de Mercado."""
     st.header("🛒 Mercado")
     
     try:
-        st.info("🔄 Cargando datos del mercado...")
-        market_data = data_service.get_market()
+        with st.spinner("Cargando datos del mercado..."):
+            market_data = data_service.get_market_parsed()
         st.success(f"✅ Datos del mercado cargados: {type(market_data).__name__}")
     except Exception as e:
         st.error(f"❌ Error cargando mercado: {e}")
@@ -154,142 +227,154 @@ def render_market_tab(data_service):
     
     if market_data:
         st.subheader("📊 Mercado de Jugadores")
-        st.markdown("""
-        <div class="tab-container">
-            <p>Mercado cargado correctamente. Aquí se mostrarían los jugadores disponibles para compra.</p>
-            <p><strong>Tipo de datos:</strong> MarketOptions</p>
-        </div>
-        """, unsafe_allow_html=True)
+        
+        # Mostrar información del mercado
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.metric("Créditos Disponibles", f"{market_data.credits:,}")
+        with col2:
+            st.metric("Mostrar Pujas", "Sí" if market_data.show_bids else "No")
+        with col3:
+            st.metric("Filtros Activos", len(market_data.filters) if market_data.filters else 0)
+        
+        # Mostrar jugadores del feed (novedades mercado)
+        st.subheader("🆕 Novedades del Mercado")
+        st.info("Los jugadores más recientes en el mercado aparecen en el feed de noticias")
+        
+        # Botón para ir al mercado completo
+        if st.button("🔍 Ver Mercado Completo", type="primary"):
+            st.info("Redirigiendo al mercado completo...")
+    else:
+        st.warning("No se pudieron cargar los datos del mercado.")
         
         # Mostrar opciones de filtrado
         st.subheader("🔍 Filtros de Búsqueda")
-        col1, col2, col3 = st.columns(3)
         
+        col1, col2 = st.columns(2)
         with col1:
             position = st.selectbox("Posición", ["Todas", "Portero", "Defensa", "Centrocampista", "Delantero"], key="market_position")
+            max_price = st.number_input("Precio máximo (€)", min_value=0, value=50000000, step=1000000, key="market_price")
         with col2:
-            team = st.selectbox("Equipo", ["Todos", "Real Madrid", "Barcelona", "Atlético Madrid"], key="market_team")
-        with col3:
-            max_price = st.number_input("Precio Máximo", min_value=0, value=10000000, step=1000000, key="market_max_price")
+            team = st.selectbox("Equipo", ["Todos"], key="market_team")
+            injured_only = st.checkbox("Solo lesionados", key="market_injured")
         
-        if st.button("🔍 Buscar Jugadores", key="market_search_btn"):
-            st.success("Búsqueda realizada (funcionalidad en desarrollo)")
+        if st.button("🔍 Buscar en Mercado", type="primary"):
+            st.info("Buscando jugadores en el mercado...")
+
 
 def render_team_tab(data_service):
-    """Renderiza la pestaña de Equipo."""
-    st.header("⚽ Mi Equipo")
+    """Renderiza la pestaña de Mi Plantilla."""
+    st.header("⚽ Mi Plantilla")
     
-    with st.spinner("Cargando equipo..."):
-        team_data = data_service.get_team()
+    try:
+        with st.spinner("Cargando datos del equipo..."):
+            team_data = data_service.get_team_parsed()
+        st.success(f"✅ Datos del equipo cargados: {type(team_data).__name__}")
+    except Exception as e:
+        st.error(f"❌ Error cargando equipo: {e}")
+        team_data = None
     
     if team_data:
-        st.subheader("👥 Formación Actual")
-        st.markdown("""
-        <div class="tab-container">
-            <p>Equipo cargado correctamente. Aquí se mostraría la formación actual del usuario.</p>
-            <p><strong>Tipo de datos:</strong> Dict</p>
-        </div>
-        """, unsafe_allow_html=True)
+        st.subheader("📊 Información del Equipo")
         
-        # Simular formación
-        st.subheader("🏟️ Alineación")
-        col1, col2, col3 = st.columns([1, 2, 1])
+        # Mostrar información básica del equipo
+        if 'gameweek_info' in team_data:
+            gameweek = team_data['gameweek_info']
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                st.metric("Jornada", gameweek.get('current_gameweek', 'N/A'))
+            with col2:
+                st.metric("Estado", gameweek.get('status', 'N/A'))
+            with col3:
+                st.metric("Próximo Partido", gameweek.get('next_match', 'N/A'))
         
-        with col2:
-            st.markdown("""
-            <div style="text-align: center; padding: 2rem; background: #f8f9fa; border-radius: 10px;">
-                <h4>Formación 1-3-4-3</h4>
-                <p>Formación típica del Mister Fantasy</p>
-            </div>
-            """, unsafe_allow_html=True)
+        # Mostrar estadísticas del equipo
+        if 'team_stats' in team_data:
+            stats = team_data['team_stats']
+            col1, col2, col3, col4 = st.columns(4)
+            with col1:
+                st.metric("Puntos Totales", stats.get('total_points', 0))
+            with col2:
+                st.metric("Promedio", f"{stats.get('average', 0):.1f}")
+            with col3:
+                st.metric("Valor del Equipo", f"{stats.get('team_value', 0):,} €")
+            with col4:
+                st.metric("Jugadores", stats.get('num_players', 0))
+        
+        # Mostrar jugadores
+        if 'players' in team_data:
+            players = team_data['players']
+            st.subheader("👥 Jugadores del Equipo")
+            
+            for i, player in enumerate(players[:10]):  # Mostrar hasta 10 jugadores
+                col1, col2, col3, col4 = st.columns([2, 1, 1, 1])
+                with col1:
+                    st.write(f"**{player.get('name', 'N/A')}**")
+                with col2:
+                    st.write(f"Pos: {player.get('position', 'N/A')}")
+                with col3:
+                    st.write(f"Puntos: {player.get('points', 0)}")
+                with col4:
+                    st.write(f"Precio: {player.get('price', 0):,} €")
+    else:
+        st.warning("No se pudieron cargar los datos del equipo.")
+
 
 def render_standings_tab(data_service):
-    """Renderiza la pestaña de Tabla/Clasificación."""
+    """Renderiza la pestaña de Clasificación."""
     st.header("🏆 Clasificación")
     
     try:
-        st.info("🔄 Cargando datos de clasificación...")
-        standings_data = data_service.get_standings_parsed()
-        st.success(f"✅ Datos cargados: {len(standings_data) if standings_data else 0} usuarios")
-        
-        if standings_data:
-            st.write(f"📊 Primer usuario: {standings_data[0].name if standings_data[0] else 'N/A'}")
+        with st.spinner("Cargando clasificación..."):
+            standings = data_service.get_standings_parsed()
+        st.success(f"✅ Clasificación cargada: {len(standings)} usuarios")
     except Exception as e:
         st.error(f"❌ Error cargando clasificación: {e}")
-        standings_data = None
+        standings = []
     
-    if standings_data:
-        st.subheader("📊 Tabla de Posiciones")
+    if standings:
+        st.subheader("📊 Tabla de Clasificación")
         
         # Crear DataFrame para la tabla
-        df_data = []
-        for user in standings_data:
-            df_data.append({
+        import pandas as pd
+        
+        data = []
+        for user in standings:
+            data.append({
                 'Posición': user.position,
                 'Usuario': user.name,
                 'Puntos': user.points,
-                'Diferencia': user.points_diff or 'N/A',
-                'Jugadores': user.num_players or 'N/A',
-                'Valor Equipo': f"{user.team_value:,} €" if user.team_value else 'N/A',
-                'ID': user.id,
-                'Slug': user.slug
+                'Diferencia': user.points_diff,
+                'Jugadores': user.num_players,
+                'Valor Equipo': f"{user.team_value:,} €"
             })
         
-        df = pd.DataFrame(df_data)
+        df = pd.DataFrame(data)
+        st.dataframe(df, use_container_width=True)
         
-        # Mostrar tabla con enlaces a detalles
-        for idx, row in df.iterrows():
-            with st.container():
-                col1, col2, col3, col4, col5 = st.columns([1, 3, 2, 2, 2])
-                
-                with col1:
-                    st.markdown(f"**#{row['Posición']}**")
-                with col2:
-                    if st.button(f"👤 {row['Usuario']}", key=f"user_{row['ID']}"):
-                        st.session_state.selected_user_id = row['ID']
-                        st.session_state.selected_user_slug = row['Slug']
-                        st.rerun()
-                with col3:
-                    st.markdown(f"**{row['Puntos']} pts**")
-                with col4:
-                    st.markdown(f"**{row['Diferencia']}**")
-                with col5:
-                    st.markdown("📈")
-                
-                st.divider()
-        
-        # Gráfico de puntos
-        if len(df) > 1:
-            st.subheader("📈 Gráfico de Puntos")
-            fig = px.bar(df.head(10), x='Usuario', y='Puntos', 
-                        title="Top 10 - Puntos por Usuario",
-                        color='Puntos',
-                        color_continuous_scale='viridis')
-            fig.update_layout(xaxis_tickangle=-45)
-            st.plotly_chart(fig, use_container_width=True)
+        # Mostrar top 3
+        st.subheader("🥇 Top 3")
+        for i, user in enumerate(standings[:3]):
+            medal = ["🥇", "🥈", "🥉"][i]
+            st.write(f"{medal} **{user.name}** - {user.points} puntos")
+    else:
+        st.warning("No se pudieron cargar los datos de clasificación.")
+
 
 def render_search_tab(data_service):
-    """Renderiza la pestaña de Búsqueda."""
+    """Renderiza la pestaña de Buscar Jugadores."""
     st.header("🔍 Buscar Jugadores")
     
-    st.markdown("""
-    <div class="search-container">
-        <h3>🔍 Búsqueda Avanzada de Jugadores</h3>
-        <p>Utiliza los filtros para encontrar el jugador perfecto para tu equipo.</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
     # Formulario de búsqueda
+    st.subheader("🔍 Filtros de Búsqueda")
+    
     col1, col2 = st.columns(2)
-    
     with col1:
-        player_name = st.text_input("Nombre del jugador", placeholder="Ej: Mbappé", key="search_name")
+        player_name = st.text_input("Nombre del jugador", key="search_name")
         position = st.selectbox("Posición", ["Todas", "Portero", "Defensa", "Centrocampista", "Delantero"], key="search_position")
-        team = st.selectbox("Equipo", ["Todos", "Real Madrid", "Barcelona", "Atlético Madrid"], key="search_team")
-    
+        max_price = st.number_input("Precio máximo (€)", min_value=0, value=50000000, step=1000000, key="search_price")
     with col2:
-        max_price = st.number_input("Precio Máximo", min_value=0, value=50000000, step=1000000, key="search_max_price")
-        min_points = st.number_input("Puntos Mínimos", min_value=0, value=0, key="search_min_points")
+        team = st.selectbox("Equipo", ["Todos"], key="search_team")
         injured_only = st.checkbox("Solo lesionados", key="search_injured")
     
     if st.button("🔍 Buscar", type="primary"):
@@ -300,7 +385,6 @@ def render_search_tab(data_service):
                 position=0,  # 0 = todas las posiciones
                 team=0,      # 0 = todos los equipos
                 value=max_price,
-                points=min_points,
                 injured=1 if injured_only else 0,
                 benched=0,
                 favs=0,
@@ -311,170 +395,44 @@ def render_search_tab(data_service):
             )
             
             # Realizar búsqueda
-            search_result = data_service.search_players(filters)
+            search_results = data_service.get_search_parsed()
             
-            if search_result and search_result.get('players'):
-                st.subheader(f"🎯 Resultados de Búsqueda ({len(search_result['players'])} jugadores)")
+            if search_results:
+                st.success("✅ Búsqueda completada")
                 
-                for player in search_result['players'][:10]:  # Mostrar solo los primeros 10
-                    with st.container():
-                        col1, col2, col3, col4, col5 = st.columns([2, 2, 1, 1, 1])
-                        
+                # Mostrar resultados
+                st.subheader("📋 Resultados de la Búsqueda")
+                
+                if 'players' in search_results:
+                    players = search_results['players']
+                    for i, player in enumerate(players[:10]):  # Mostrar hasta 10 jugadores
+                        col1, col2, col3, col4 = st.columns([2, 1, 1, 1])
                         with col1:
-                            st.markdown(f"**{player['name']}**")
+                            st.write(f"**{player.get('name', 'N/A')}**")
                         with col2:
-                            st.markdown(f"*{player['position']}*")
+                            st.write(f"Pos: {player.get('position', 'N/A')}")
                         with col3:
-                            st.markdown(f"**{player['points']} pts**")
+                            st.write(f"Puntos: {player.get('points', 0)}")
                         with col4:
-                            st.markdown(f"**{player['value']:,} €**")
-                        with col5:
-                            if st.button("👁️", key=f"view_{player['id']}"):
-                                st.session_state.selected_player_id = player['id']
-                                st.session_state.selected_player_slug = player.get('slug', '')
-                                st.rerun()
-                        
-                        st.divider()
+                            st.write(f"Precio: {player.get('price', 0):,} €")
             else:
                 st.warning("No se encontraron jugadores con esos criterios.")
 
-def render_user_detail(user_id, user_slug, data_service):
-    """Renderiza la página de detalle de usuario."""
-    st.header("👤 Detalle de Usuario")
-    
-    with st.spinner("Cargando detalles del usuario..."):
-        user_details = data_service.get_user_details(user_id, user_slug)
-    
-    if user_details:
-        # Información del usuario
-        st.markdown(f"""
-        <div class="user-card">
-            <h2>👤 {user_details.user.name or 'Usuario'}</h2>
-            <p><strong>ID:</strong> {user_details.id}</p>
-            <p><strong>Comunidad:</strong> {user_details.user.id_community}</p>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        # Estadísticas de temporada
-        st.subheader("📊 Estadísticas de Temporada")
-        col1, col2, col3 = st.columns(3)
-        
-        with col1:
-            st.metric("Posición", f"#{user_details.season.rank}")
-        with col2:
-            st.metric("Puntos Totales", f"{user_details.season.points}")
-        with col3:
-            st.metric("Promedio", f"{user_details.season.avg:.1f}")
-        
-        # Gráfico de puntos por jornada
-        if user_details.gameweeks:
-            st.subheader("📈 Puntos por Jornada")
-            gameweeks_data = []
-            for gw in user_details.gameweeks.values():
-                gameweeks_data.append({
-                    'Jornada': gw.gameweek,
-                    'Puntos': gw.points,
-                    'Posición': gw.rank
-                })
-            
-            df_gw = pd.DataFrame(gameweeks_data)
-            fig = px.line(df_gw, x='Jornada', y='Puntos', 
-                         title="Evolución de Puntos por Jornada",
-                         markers=True)
-            st.plotly_chart(fig, use_container_width=True)
-        
-        # Equipo actual
-        if user_details.team_now:
-            st.subheader("⚽ Equipo Actual")
-            for player in user_details.team_now[:5]:  # Mostrar solo los primeros 5
-                st.markdown(f"• **{player.name}** ({player.position}) - {player.points} pts - {player.value:,} €")
-    
-    # Botón para volver
-    if st.button("← Volver a la Clasificación"):
-        st.session_state.selected_user_id = None
-        st.session_state.selected_user_slug = None
-        st.rerun()
-
-def render_player_detail(player_id, player_slug, data_service):
-    """Renderiza la página de detalle de jugador."""
-    st.header("⚽ Detalle de Jugador")
-    
-    with st.spinner("Cargando detalles del jugador..."):
-        player = data_service.get_player_details(player_id, player_slug)
-    
-    if player:
-        # Información del jugador
-        col1, col2 = st.columns([1, 2])
-        
-        with col1:
-            if hasattr(player, 'photo_url') and player.photo_url:
-                st.image(player.photo_url, width=200)
-            else:
-                st.markdown("🖼️ *Sin foto disponible*")
-        
-        with col2:
-            st.markdown(f"""
-            <div class="user-card">
-                <h2>⚽ {player.name}</h2>
-                <p><strong>Posición:</strong> {player.position}</p>
-                <p><strong>Puntos:</strong> {player.points}</p>
-                <p><strong>Promedio:</strong> {player.avg}</p>
-                <p><strong>Valor:</strong> {player.value:,} €</p>
-            </div>
-            """, unsafe_allow_html=True)
-        
-        # Información del equipo
-        if hasattr(player, 'team') and player.team:
-            st.subheader("🏟️ Equipo")
-            st.markdown(f"**{player.team.name}**")
-            if hasattr(player.team, 'logo_url') and player.team.logo_url:
-                st.image(player.team.logo_url, width=100)
-        
-        # Información de transferencia
-        if hasattr(player, 'transfer') and player.transfer:
-            st.subheader("💰 Información de Transferencia")
-            st.markdown(f"**Precio:** {player.transfer.price:,} €")
-            st.markdown(f"**Fecha:** {player.transfer.date}")
-            st.markdown(f"**Origen:** {player.transfer.origin}")
-    
-    # Botón para volver
-    if st.button("← Volver a la Búsqueda"):
-        st.session_state.selected_player_id = None
-        st.session_state.selected_player_slug = None
-        st.rerun()
 
 def main():
     """Función principal de la aplicación."""
+    render_header()
+    
+    # Inicializar DataService
     try:
-        st.info("🚀 Iniciando aplicación Mister Fantasy Stats...")
-        # Inicializar el servicio de datos
-        data_service = get_data_service()
-        st.success("✅ Servicio de datos inicializado")
-        
-        # Renderizar header
-        render_header()
-        
-        # Verificar si hay una página de detalle seleccionada
-        if st.session_state.get('selected_user_id'):
-            st.info(f"👤 Mostrando detalles del usuario: {st.session_state.selected_user_id}")
-            render_user_detail(st.session_state.selected_user_id, 
-                             st.session_state.selected_user_slug, 
-                             data_service)
-            return
-        
-        if st.session_state.get('selected_player_id'):
-            st.info(f"⚽ Mostrando detalles del jugador: {st.session_state.selected_player_id}")
-            render_player_detail(st.session_state.selected_player_id, 
-                               st.session_state.selected_player_slug, 
-                               data_service)
-            return
+        data_service = DataService()
+        st.success("✅ Servicio de datos inicializado correctamente")
     except Exception as e:
-        st.error(f"❌ Error en la aplicación: {e}")
-        st.exception(e)
+        st.error(f"❌ Error inicializando servicio de datos: {e}")
         return
     
-    # Crear las pestañas principales
-    tab1, tab2, tab3, tab4, tab5 = st.tabs(["🏠 Inicio", "🛒 Mercado", "⚽ Equipo", "🏆 Tabla", "🔍 Buscar"])
+    # Crear pestañas
+    tab1, tab2, tab3, tab4, tab5 = st.tabs(["🏠 Inicio", "🛒 Mercado", "⚽ Equipo", "🏆 Clasificación", "🔍 Buscador"])
     
     with tab1:
         render_home_tab(data_service)
@@ -490,15 +448,6 @@ def main():
     
     with tab5:
         render_search_tab(data_service)
-    
-    # Footer
-    st.markdown("---")
-    st.markdown("""
-    <div style="text-align: center; color: #666; padding: 1rem;">
-        <p>⚽ Mister Fantasy Stats - Análisis completo de tu liga de fantasía</p>
-        <p>Desarrollado con ❤️ usando Streamlit</p>
-    </div>
-    """, unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()

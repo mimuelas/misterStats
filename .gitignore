@@ -1,3 +1,4 @@
+# Python
 __pycache__/
 *.pyc
 *.pyo
@@ -8,3 +9,20 @@ __pycache__/
 *.pyzw
 *.pyzwz
 *.pyzwzw
+*.pyzwzwz
+
+# Streamlit
+.streamlit/
+
+# Data and cache
+data/cache/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

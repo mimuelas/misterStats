@@ -1,0 +1,879 @@
+<div id="partial-wrapper">
+  <div id="partial-content" data-pag="standings" data-title="Clasificación | Mister">
+        <div class="wrapper wrapper--spaced">
+        <div class="segments" data-panels="standings">
+      <button class="btn segment active" data-tab="total" data-event="select_general_standings">
+        General
+      </button>
+      <button class="btn segment " data-tab="gameweek" data-event="select_gameweek_standings">
+        Jornada
+      </button>
+    </div>
+    <div class="panels panels-standings">
+      <div class="panel panel-total">
+                                    <ul class="player-list player-list--primary">
+                            <li
+        >
+    <div class="player-row">
+      <a class="btn btn-sw-link user"
+                  href="users/14648707/leopoldo-panero"
+                data-event="select_gameuser"
+      >
+        <div class="position">
+          1
+        </div>
+            <div class="user-avatar user-avatar--sm" style="background-color: hsl(152 50 50); ">
+    <span>LP</span>
+          <img src="https://cdn-mister.mundodeportivo.com/file/cdn-mister/users/6890822cc2813.png" onerror="this.style.display='none'" loading="lazy">
+      </div>
+
+
+        <div class="info">
+          <div class="name ">
+            Leopoldo Panero
+          </div>
+                      <div class="played">
+                              14 jugadores
+                                            · € 76.919.000
+                          </div>
+                  </div>
+        <div class="points">
+          145
+          <span>
+            Pts
+          </span>
+                      <div class="diff">
+              +54
+            </div>
+                  </div>
+      </a>
+    </div>
+  </li>
+
+                            <li
+        >
+    <div class="player-row">
+      <a class="btn btn-sw-link user"
+                  href="users/14649108/odiableiroonelife"
+                data-event="select_gameuser"
+      >
+        <div class="position">
+          2
+        </div>
+            <div class="user-avatar user-avatar--sm" style="background-color: hsl(359 50 50); ">
+    <span>O</span>
+          <img src="https://cdn-mister.mundodeportivo.com/file/cdn-mister/users/68909c50ebb26.png" onerror="this.style.display='none'" loading="lazy">
+      </div>
+
+
+        <div class="info">
+          <div class="name ">
+            OdiableiroOneLife
+          </div>
+                      <div class="played">
+                              16 jugadores
+                                            · € 91.101.000
+                          </div>
+                  </div>
+        <div class="points">
+          138
+          <span>
+            Pts
+          </span>
+                      <div class="diff">
+              +47
+            </div>
+                  </div>
+      </a>
+    </div>
+  </li>
+
+                            <li
+        >
+    <div class="player-row">
+      <a class="btn btn-sw-link user"
+                  href="users/14648755/el-capo-solitario"
+                data-event="select_gameuser"
+      >
+        <div class="position">
+          3
+        </div>
+            <div class="user-avatar user-avatar--sm" style="background-color: hsl(240 50 50); ">
+    <span>EC</span>
+          <img src="https://cdn-mister.mundodeportivo.com/file/cdn-mister/users/66b07c604549c.png" onerror="this.style.display='none'" loading="lazy">
+      </div>
+
+
+        <div class="info">
+          <div class="name ">
+            EL CAPO SOLITARIO
+          </div>
+                      <div class="played">
+                              14 jugadores
+                                            · € 71.097.000
+                          </div>
+                  </div>
+        <div class="points">
+          135
+          <span>
+            Pts
+          </span>
+                      <div class="diff">
+              +44
+            </div>
+                  </div>
+      </a>
+    </div>
+  </li>
+
+                            <li
+        >
+    <div class="player-row">
+      <a class="btn btn-sw-link user"
+                  href="users/14651935/principe-fantasy"
+                data-event="select_gameuser"
+      >
+        <div class="position">
+          4
+        </div>
+            <div class="user-avatar user-avatar--sm" style="background-color: hsl(223 50 50); ">
+    <span>PF</span>
+          <img src="https://cdn-mister.mundodeportivo.com/file/cdn-mister/users/68bb65330d6bf.png" onerror="this.style.display='none'" loading="lazy">
+      </div>
+
+
+        <div class="info">
+          <div class="name ">
+            Príncipe Fantasy
+          </div>
+                      <div class="played">
+                              16 jugadores
+                                            · € 81.899.000
+                          </div>
+                  </div>
+        <div class="points">
+          134
+          <span>
+            Pts
+          </span>
+                      <div class="diff">
+              +43
+            </div>
+                  </div>
+      </a>
+    </div>
+  </li>
+
+                            <li
+        >
+    <div class="player-row">
+      <a class="btn btn-sw-link user"
+                  href="users/14649041/palash"
+                data-event="select_gameuser"
+      >
+        <div class="position">
+          5
+        </div>
+            <div class="user-avatar user-avatar--sm" style="background-color: hsl(185 50 50); ">
+    <span>P</span>
+          <img src="https://cdn-mister.mundodeportivo.com/file/cdn-mister/users/634d8e342416d.png" onerror="this.style.display='none'" loading="lazy">
+      </div>
+
+
+        <div class="info">
+          <div class="name ">
+            Palash
+          </div>
+                      <div class="played">
+                              13 jugadores
+                                            · € 49.166.000
+                          </div>
+                  </div>
+        <div class="points">
+          117
+          <span>
+            Pts
+          </span>
+                      <div class="diff">
+              +26
+            </div>
+                  </div>
+      </a>
+    </div>
+  </li>
+
+                            <li
+        >
+    <div class="player-row">
+      <a class="btn btn-sw-link user"
+                  href="users/14648758/murete"
+                data-event="select_gameuser"
+      >
+        <div class="position">
+          6
+        </div>
+            <div class="user-avatar user-avatar--sm" style="background-color: hsl(191 50 50); ">
+    <span>M</span>
+          <img src="https://cdn-mister.mundodeportivo.com/file/cdn-mister/users/66f4114572331.png" onerror="this.style.display='none'" loading="lazy">
+      </div>
+
+
+        <div class="info">
+          <div class="name ">
+            Murete
+          </div>
+                      <div class="played">
+                              21 jugadores
+                                            · € 64.799.000
+                          </div>
+                  </div>
+        <div class="points">
+          114
+          <span>
+            Pts
+          </span>
+                      <div class="diff">
+              +23
+            </div>
+                  </div>
+      </a>
+    </div>
+  </li>
+
+                            <li
+        >
+    <div class="player-row">
+      <a class="btn btn-sw-link user"
+                  href="users/14648872/simeones-soldier-fc"
+                data-event="select_gameuser"
+      >
+        <div class="position">
+          7
+        </div>
+            <div class="user-avatar user-avatar--sm" style="background-color: hsl(79 50 50); ">
+    <span>SS</span>
+          <img src="https://cdn-mister.mundodeportivo.com/file/cdn-mister/users/6890a6d921334.png" onerror="this.style.display='none'" loading="lazy">
+      </div>
+
+
+        <div class="info">
+          <div class="name ">
+            Simeone’s Soldier FC
+          </div>
+                      <div class="played">
+                              14 jugadores
+                                            · € 63.549.000
+                          </div>
+                  </div>
+        <div class="points">
+          108
+          <span>
+            Pts
+          </span>
+                      <div class="diff">
+              +17
+            </div>
+                  </div>
+      </a>
+    </div>
+  </li>
+
+                            <li
+        >
+    <div class="player-row">
+      <a class="btn btn-sw-link user"
+                  href="users/14648870/mostoletus"
+                data-event="select_gameuser"
+      >
+        <div class="position">
+          8
+        </div>
+            <div class="user-avatar user-avatar--sm" style="background-color: hsl(148 50 50); ">
+    <span>M</span>
+          <img src="https://cdn-mister.mundodeportivo.com/file/cdn-mister/users/689e14506c18c.png" onerror="this.style.display='none'" loading="lazy">
+      </div>
+
+
+        <div class="info">
+          <div class="name ">
+            Mostoletus
+          </div>
+                      <div class="played">
+                              10 jugadores
+                                            · € 52.268.000
+                          </div>
+                  </div>
+        <div class="points">
+          100
+          <span>
+            Pts
+          </span>
+                      <div class="diff">
+              +9
+            </div>
+                  </div>
+      </a>
+    </div>
+  </li>
+
+                            <li
+        >
+    <div class="player-row">
+      <a class="btn btn-sw-link user"
+                  href="users/14648846/escorpion-"
+                data-event="select_gameuser"
+      >
+        <div class="position">
+          9
+        </div>
+            <div class="user-avatar user-avatar--sm" style="background-color: hsl(232 50 50); ">
+    <span>E🦂</span>
+          <img src="https://cdn-mister.mundodeportivo.com/file/cdn-mister/users/68b750506d8f9.png" onerror="this.style.display='none'" loading="lazy">
+      </div>
+
+
+        <div class="info">
+          <div class="name ">
+            Escorpión 🦂
+          </div>
+                      <div class="played">
+                              16 jugadores
+                                            · € 65.038.000
+                          </div>
+                  </div>
+        <div class="points">
+          99
+          <span>
+            Pts
+          </span>
+                      <div class="diff">
+              +8
+            </div>
+                  </div>
+      </a>
+    </div>
+  </li>
+
+                            <li
+        >
+    <div class="player-row">
+      <a class="btn btn-sw-link user"
+                  href="users/14648768/mikimu"
+                data-event="select_gameuser"
+      >
+        <div class="position">
+          10
+        </div>
+            <div class="user-avatar user-avatar--sm" style="background-color: hsl(70 50 50); ">
+    <span>M</span>
+      </div>
+
+
+        <div class="info">
+          <div class="name myself">
+            Mikimu
+          </div>
+                      <div class="played">
+                              17 jugadores
+                                            · € 76.939.000
+                          </div>
+                  </div>
+        <div class="points">
+          91
+          <span>
+            Pts
+          </span>
+                  </div>
+      </a>
+    </div>
+  </li>
+
+                            <li
+        >
+    <div class="player-row">
+      <a class="btn btn-sw-link user"
+                  href="users/14656130/johan-cruyff"
+                data-event="select_gameuser"
+      >
+        <div class="position">
+          11
+        </div>
+            <div class="user-avatar user-avatar--sm" style="background-color: hsl(119 50 50); ">
+    <span>JC</span>
+          <img src="https://cdn-mister.mundodeportivo.com/file/cdn-mister/users/67b8f75a5f281.png" onerror="this.style.display='none'" loading="lazy">
+      </div>
+
+
+        <div class="info">
+          <div class="name ">
+            Johan Cruyff
+          </div>
+                      <div class="played">
+                              14 jugadores
+                                            · € 53.924.000
+                          </div>
+                  </div>
+        <div class="points">
+          89
+          <span>
+            Pts
+          </span>
+                      <div class="diff">
+              -2
+            </div>
+                  </div>
+      </a>
+    </div>
+  </li>
+
+                      </ul>
+                        </div>
+      <div class="panel panel-gameweek" style="display: none">
+                  <div class="gameweek-selector-inline">
+                          <a
+                class="btn btn--secondary btn--md "
+                href="https://mister.mundodeportivo.com/standings?gw=3243"
+                data-partial="true"
+              >
+                J1
+              </a>
+                          <a
+                class="btn btn--secondary btn--md "
+                href="https://mister.mundodeportivo.com/standings?gw=3401"
+                data-partial="true"
+              >
+                J2
+              </a>
+                          <a
+                class="btn btn--secondary btn--md "
+                href="https://mister.mundodeportivo.com/standings?gw=3402"
+                data-partial="true"
+              >
+                J3
+              </a>
+                          <a
+                class="btn btn--secondary btn--md selected"
+                href="https://mister.mundodeportivo.com/standings?gw=3405"
+                data-partial="true"
+              >
+                J6
+              </a>
+                      </div>
+                                          <ul class="player-list player-list--primary">
+                            <li
+        >
+    <div class="player-row">
+      <a class="btn btn-sw-link user"
+                  href="users/14648707/leopoldo-panero"
+                data-event="select_gameuser"
+      >
+        <div class="position">
+          1
+        </div>
+            <div class="user-avatar user-avatar--sm" style="background-color: hsl(152 50 50); ">
+    <span>LP</span>
+          <img src="https://cdn-mister.mundodeportivo.com/file/cdn-mister/users/6890822cc2813.png" onerror="this.style.display='none'" loading="lazy">
+      </div>
+
+
+        <div class="info">
+          <div class="name ">
+            Leopoldo Panero
+          </div>
+                      <div class="played">
+                              3 / 11
+                Jugadores
+                                            · € 54.519.000
+                          </div>
+                  </div>
+        <div class="points">
+          11
+          <span>
+            Pts
+          </span>
+                  </div>
+      </a>
+    </div>
+  </li>
+
+                            <li
+        >
+    <div class="player-row">
+      <a class="btn btn-sw-link user"
+                  href="users/14656130/johan-cruyff"
+                data-event="select_gameuser"
+      >
+        <div class="position">
+          2
+        </div>
+            <div class="user-avatar user-avatar--sm" style="background-color: hsl(119 50 50); ">
+    <span>JC</span>
+          <img src="https://cdn-mister.mundodeportivo.com/file/cdn-mister/users/67b8f75a5f281.png" onerror="this.style.display='none'" loading="lazy">
+      </div>
+
+
+        <div class="info">
+          <div class="name ">
+            Johan Cruyff
+          </div>
+                      <div class="played">
+                              4 / 11
+                Jugadores
+                                            · € 50.142.000
+                          </div>
+                  </div>
+        <div class="points">
+          11
+          <span>
+            Pts
+          </span>
+                  </div>
+      </a>
+    </div>
+  </li>
+
+                            <li
+        >
+    <div class="player-row">
+      <a class="btn btn-sw-link user"
+                  href="users/14648758/murete"
+                data-event="select_gameuser"
+      >
+        <div class="position">
+          3
+        </div>
+            <div class="user-avatar user-avatar--sm" style="background-color: hsl(191 50 50); ">
+    <span>M</span>
+          <img src="https://cdn-mister.mundodeportivo.com/file/cdn-mister/users/66f4114572331.png" onerror="this.style.display='none'" loading="lazy">
+      </div>
+
+
+        <div class="info">
+          <div class="name ">
+            Murete
+          </div>
+                      <div class="played">
+                              3 / 11
+                Jugadores
+                                            · € 39.855.000
+                          </div>
+                  </div>
+        <div class="points">
+          9
+          <span>
+            Pts
+          </span>
+                  </div>
+      </a>
+    </div>
+  </li>
+
+                            <li
+        >
+    <div class="player-row">
+      <a class="btn btn-sw-link user"
+                  href="users/14649108/odiableiroonelife"
+                data-event="select_gameuser"
+      >
+        <div class="position">
+          4
+        </div>
+            <div class="user-avatar user-avatar--sm" style="background-color: hsl(359 50 50); ">
+    <span>O</span>
+          <img src="https://cdn-mister.mundodeportivo.com/file/cdn-mister/users/68909c50ebb26.png" onerror="this.style.display='none'" loading="lazy">
+      </div>
+
+
+        <div class="info">
+          <div class="name ">
+            OdiableiroOneLife
+          </div>
+                      <div class="played">
+                              2 / 11
+                Jugadores
+                                            · € 54.614.000
+                          </div>
+                  </div>
+        <div class="points">
+          5
+          <span>
+            Pts
+          </span>
+                  </div>
+      </a>
+    </div>
+  </li>
+
+                            <li
+        >
+    <div class="player-row">
+      <a class="btn btn-sw-link user"
+                  href="users/14651935/principe-fantasy"
+                data-event="select_gameuser"
+      >
+        <div class="position">
+          5
+        </div>
+            <div class="user-avatar user-avatar--sm" style="background-color: hsl(223 50 50); ">
+    <span>PF</span>
+          <img src="https://cdn-mister.mundodeportivo.com/file/cdn-mister/users/68bb65330d6bf.png" onerror="this.style.display='none'" loading="lazy">
+      </div>
+
+
+        <div class="info">
+          <div class="name ">
+            Príncipe Fantasy
+          </div>
+                      <div class="played">
+                              0 / 11
+                Jugadores
+                                            · € 63.600.000
+                          </div>
+                  </div>
+        <div class="points">
+          0
+          <span>
+            Pts
+          </span>
+                  </div>
+      </a>
+    </div>
+  </li>
+
+                            <li
+        >
+    <div class="player-row">
+      <a class="btn btn-sw-link user"
+                  href="users/14648755/el-capo-solitario"
+                data-event="select_gameuser"
+      >
+        <div class="position">
+          6
+        </div>
+            <div class="user-avatar user-avatar--sm" style="background-color: hsl(240 50 50); ">
+    <span>EC</span>
+          <img src="https://cdn-mister.mundodeportivo.com/file/cdn-mister/users/66b07c604549c.png" onerror="this.style.display='none'" loading="lazy">
+      </div>
+
+
+        <div class="info">
+          <div class="name ">
+            EL CAPO SOLITARIO
+          </div>
+                      <div class="played">
+                              0 / 11
+                Jugadores
+                                            · € 58.499.000
+                          </div>
+                  </div>
+        <div class="points">
+          0
+          <span>
+            Pts
+          </span>
+                  </div>
+      </a>
+    </div>
+  </li>
+
+                            <li
+        >
+    <div class="player-row">
+      <a class="btn btn-sw-link user"
+                  href="users/14648768/mikimu"
+                data-event="select_gameuser"
+      >
+        <div class="position">
+          7
+        </div>
+            <div class="user-avatar user-avatar--sm" style="background-color: hsl(70 50 50); ">
+    <span>M</span>
+      </div>
+
+
+        <div class="info">
+          <div class="name myself">
+            Mikimu
+          </div>
+                      <div class="played">
+                              1 / 11
+                Jugadores
+                                            · € 57.869.000
+                          </div>
+                  </div>
+        <div class="points">
+          0
+          <span>
+            Pts
+          </span>
+                  </div>
+      </a>
+    </div>
+  </li>
+
+                            <li
+        >
+    <div class="player-row">
+      <a class="btn btn-sw-link user"
+                  href="users/14648872/simeones-soldier-fc"
+                data-event="select_gameuser"
+      >
+        <div class="position">
+          8
+        </div>
+            <div class="user-avatar user-avatar--sm" style="background-color: hsl(79 50 50); ">
+    <span>SS</span>
+          <img src="https://cdn-mister.mundodeportivo.com/file/cdn-mister/users/6890a6d921334.png" onerror="this.style.display='none'" loading="lazy">
+      </div>
+
+
+        <div class="info">
+          <div class="name ">
+            Simeone’s Soldier FC
+          </div>
+                      <div class="played">
+                              0 / 11
+                Jugadores
+                                            · € 55.570.000
+                          </div>
+                  </div>
+        <div class="points">
+          0
+          <span>
+            Pts
+          </span>
+                  </div>
+      </a>
+    </div>
+  </li>
+
+                            <li
+        >
+    <div class="player-row">
+      <a class="btn btn-sw-link user"
+                  href="users/14649041/palash"
+                data-event="select_gameuser"
+      >
+        <div class="position">
+          9
+        </div>
+            <div class="user-avatar user-avatar--sm" style="background-color: hsl(185 50 50); ">
+    <span>P</span>
+          <img src="https://cdn-mister.mundodeportivo.com/file/cdn-mister/users/634d8e342416d.png" onerror="this.style.display='none'" loading="lazy">
+      </div>
+
+
+        <div class="info">
+          <div class="name ">
+            Palash
+          </div>
+                      <div class="played">
+                              0 / 11
+                Jugadores
+                                            · € 53.994.000
+                          </div>
+                  </div>
+        <div class="points">
+          0
+          <span>
+            Pts
+          </span>
+                  </div>
+      </a>
+    </div>
+  </li>
+
+                            <li
+        >
+    <div class="player-row">
+      <a class="btn btn-sw-link user"
+                  href="users/14648846/escorpion-"
+                data-event="select_gameuser"
+      >
+        <div class="position">
+          10
+        </div>
+            <div class="user-avatar user-avatar--sm" style="background-color: hsl(232 50 50); ">
+    <span>E🦂</span>
+          <img src="https://cdn-mister.mundodeportivo.com/file/cdn-mister/users/68b750506d8f9.png" onerror="this.style.display='none'" loading="lazy">
+      </div>
+
+
+        <div class="info">
+          <div class="name ">
+            Escorpión 🦂
+          </div>
+                      <div class="played">
+                              0 / 11
+                Jugadores
+                                            · € 46.820.000
+                          </div>
+                  </div>
+        <div class="points">
+          0
+          <span>
+            Pts
+          </span>
+                  </div>
+      </a>
+    </div>
+  </li>
+
+                            <li
+        >
+    <div class="player-row">
+      <a class="btn btn-sw-link user"
+                  href="users/14648870/mostoletus"
+                data-event="select_gameuser"
+      >
+        <div class="position">
+          11
+        </div>
+            <div class="user-avatar user-avatar--sm" style="background-color: hsl(148 50 50); ">
+    <span>M</span>
+          <img src="https://cdn-mister.mundodeportivo.com/file/cdn-mister/users/689e14506c18c.png" onerror="this.style.display='none'" loading="lazy">
+      </div>
+
+
+        <div class="info">
+          <div class="name ">
+            Mostoletus
+          </div>
+                      <div class="played">
+                              2 / 11
+                Jugadores
+                                            · € 43.489.000
+                          </div>
+                  </div>
+        <div class="points">
+          0
+          <span>
+            Pts
+          </span>
+                  </div>
+      </a>
+    </div>
+  </li>
+
+                      </ul>
+                        </div>
+    </div>
+        <div class="bottom-buttons">
+                    <button class="btn btn-sw btn--tertiary btn--lg btn--wide" data-sw="progression">
+          Evolución de la clasificación
+        </button>
+                    <button class="btn btn--primary btn--lg btn-popup btn--wide" data-popup="invite" data-event="invite">
+          Invitar amigos
+        </button>
+          </div>
+    <div class="user-me-placeholder"></div>
+  </div>
+  </div>
+  <div id="partial-inline-js">
+        </div>
+  <div id="partial-external-js">
+      <script src="https://app-mister.mundodeportivo.com/file/forge-app/d3f2dd1b/app/dist/js/views/standings.functions.js"></script>
+  <script src="https://app-mister.mundodeportivo.com/file/forge-app/d3f2dd1b/app/dist/js/views/standings.listeners.js"></script>
+  <script src="https://app-mister.mundodeportivo.com/file/forge-app/d3f2dd1b/app/dist/js/views/standings.js"></script>
+    </div>
+</div>

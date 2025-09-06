@@ -1,0 +1,55 @@
+{
+  "id": 18004,
+  "name": "Ante Budimir",
+  "position": 4,
+  "points": 15,
+  "avg": 5,
+  "status": null,
+  "id_competition": 1,
+  "injury": [],
+  "photo_url": "https://cdn-mister.mundodeportivo.com/file/cdn-common/players/18004.png?version=20231217210101",
+  "is_favorite": 0,
+  "value": 14922000,
+  "previous_value": 14945000,
+  "team": {
+    "id": 50,
+    "name": "Osasuna",
+    "logo_url": "https://cdn-mister.mundodeportivo.com/file/cdn-common/teams/50.png?version=20250906"
+  },
+  "owner": {
+    "id": 14649108,
+    "name": "OdiableiroOneLife",
+    "id_community": 2352747,
+    "avatar": {
+      "color": 359,
+      "initials": "O",
+      "pic": "https://cdn-mister.mundodeportivo.com/file/cdn-mister/users/68909c50ebb26.png"
+    }
+  },
+  "transfer": {
+    "date": "4 sept 2025",
+    "origin": "normal",
+    "price": 15100840
+  },
+  "clause": {
+    "floor": 15100840,
+    "multiplier": 1.5,
+    "default": 0,
+    "shield": "4 días",
+    "tier": 4,
+    "shield2WeeksSku": "shield_t4_2w",
+    "shield1MonthSku": "shield_t4_1m"
+  },
+  "video_frame": "{\"platform\":\"youtube\",\"id\":\"mrWFFCQVOQM\"}",
+  "streak": null,
+  "streak_sum": null,
+  "id_uc": null,
+  "uc_name": null,
+  "shield": null,
+  "fav": null,
+  "id_market": null,
+  "is_mine": null,
+  "team_logo_url": null,
+  "clauses_rank": null,
+  "match_info": null
+}

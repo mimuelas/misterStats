@@ -1,0 +1,55 @@
+{
+  "id": 58954,
+  "name": "Kylian Mbappé",
+  "position": 4,
+  "points": 30,
+  "avg": 10,
+  "status": null,
+  "id_competition": 1,
+  "injury": [],
+  "photo_url": "https://cdn-mister.mundodeportivo.com/file/cdn-common/players/58954.png?version=20240702085856",
+  "is_favorite": 0,
+  "value": 24231000,
+  "previous_value": 24227000,
+  "team": {
+    "id": 15,
+    "name": "Real Madrid",
+    "logo_url": "https://cdn-mister.mundodeportivo.com/file/cdn-common/teams/15.png?version=20250906"
+  },
+  "owner": {
+    "id": 14651935,
+    "name": "Príncipe Fantasy",
+    "id_community": 2352747,
+    "avatar": {
+      "color": 223,
+      "initials": "PF",
+      "pic": "https://cdn-mister.mundodeportivo.com/file/cdn-mister/users/68bb65330d6bf.png"
+    }
+  },
+  "transfer": {
+    "date": "13 ago 2025",
+    "origin": "normal",
+    "price": 26864810
+  },
+  "clause": {
+    "floor": 26864810,
+    "multiplier": 1.5,
+    "default": 0,
+    "shield": 0,
+    "tier": 5,
+    "shield2WeeksSku": "shield_t5_2w",
+    "shield1MonthSku": "shield_t5_1m"
+  },
+  "video_frame": "{\"platform\":\"dailymotion\",\"id\":\"x932qt6\"}",
+  "streak": null,
+  "streak_sum": null,
+  "id_uc": null,
+  "uc_name": null,
+  "shield": null,
+  "fav": null,
+  "id_market": null,
+  "is_mine": null,
+  "team_logo_url": null,
+  "clauses_rank": null,
+  "match_info": null
+}

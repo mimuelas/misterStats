@@ -1,0 +1,123 @@
+[
+  {
+    "position": 1,
+    "name": "Leopoldo Panero",
+    "id": "14648707",
+    "slug": "leopoldo-panero",
+    "avatar_url": "https://cdn-mister.mundodeportivo.com/file/cdn-mister/users/6890822cc2813.png",
+    "points": 145,
+    "points_diff": "+54",
+    "num_players": 14,
+    "team_value": 76919000
+  },
+  {
+    "position": 2,
+    "name": "OdiableiroOneLife",
+    "id": "14649108",
+    "slug": "odiableiroonelife",
+    "avatar_url": "https://cdn-mister.mundodeportivo.com/file/cdn-mister/users/68909c50ebb26.png",
+    "points": 138,
+    "points_diff": "+47",
+    "num_players": 16,
+    "team_value": 91101000
+  },
+  {
+    "position": 3,
+    "name": "EL CAPO SOLITARIO",
+    "id": "14648755",
+    "slug": "el-capo-solitario",
+    "avatar_url": "https://cdn-mister.mundodeportivo.com/file/cdn-mister/users/66b07c604549c.png",
+    "points": 135,
+    "points_diff": "+44",
+    "num_players": 14,
+    "team_value": 71097000
+  },
+  {
+    "position": 4,
+    "name": "Príncipe Fantasy",
+    "id": "14651935",
+    "slug": "principe-fantasy",
+    "avatar_url": "https://cdn-mister.mundodeportivo.com/file/cdn-mister/users/68bb65330d6bf.png",
+    "points": 134,
+    "points_diff": "+43",
+    "num_players": 16,
+    "team_value": 81899000
+  },
+  {
+    "position": 5,
+    "name": "Palash",
+    "id": "14649041",
+    "slug": "palash",
+    "avatar_url": "https://cdn-mister.mundodeportivo.com/file/cdn-mister/users/634d8e342416d.png",
+    "points": 117,
+    "points_diff": "+26",
+    "num_players": 13,
+    "team_value": 49166000
+  },
+  {
+    "position": 6,
+    "name": "Murete",
+    "id": "14648758",
+    "slug": "murete",
+    "avatar_url": "https://cdn-mister.mundodeportivo.com/file/cdn-mister/users/66f4114572331.png",
+    "points": 114,
+    "points_diff": "+23",
+    "num_players": 21,
+    "team_value": 64799000
+  },
+  {
+    "position": 7,
+    "name": "Simeone’s Soldier FC",
+    "id": "14648872",
+    "slug": "simeones-soldier-fc",
+    "avatar_url": "https://cdn-mister.mundodeportivo.com/file/cdn-mister/users/6890a6d921334.png",
+    "points": 108,
+    "points_diff": "+17",
+    "num_players": 14,
+    "team_value": 63549000
+  },
+  {
+    "position": 8,
+    "name": "Mostoletus",
+    "id": "14648870",
+    "slug": "mostoletus",
+    "avatar_url": "https://cdn-mister.mundodeportivo.com/file/cdn-mister/users/689e14506c18c.png",
+    "points": 100,
+    "points_diff": "+9",
+    "num_players": 10,
+    "team_value": 52268000
+  },
+  {
+    "position": 9,
+    "name": "Escorpión 🦂",
+    "id": "14648846",
+    "slug": "escorpion-",
+    "avatar_url": "https://cdn-mister.mundodeportivo.com/file/cdn-mister/users/68b750506d8f9.png",
+    "points": 99,
+    "points_diff": "+8",
+    "num_players": 16,
+    "team_value": 65038000
+  },
+  {
+    "position": 10,
+    "name": "Mikimu",
+    "id": "14648768",
+    "slug": "mikimu",
+    "avatar_url": null,
+    "points": 91,
+    "points_diff": null,
+    "num_players": 17,
+    "team_value": 76939000
+  },
+  {
+    "position": 11,
+    "name": "Johan Cruyff",
+    "id": "14656130",
+    "slug": "johan-cruyff",
+    "avatar_url": "https://cdn-mister.mundodeportivo.com/file/cdn-mister/users/67b8f75a5f281.png",
+    "points": 89,
+    "points_diff": "-2",
+    "num_players": 14,
+    "team_value": 53924000
+  }
+]
